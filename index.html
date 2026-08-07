@@ -1,0 +1,2927 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>SPEED IDLE</title>
+    <style>
+body {
+    background-color: #0b0b0b;
+    color: #00ff88;
+    font-family: "JetBrains Mono", "Consolas", monospace;
+    padding: 0;
+    margin: 0;
+    line-height: 1.6;
+    position: relative;
+    min-height: 100vh;
+    overflow-x: hidden;
+    display: flex;
+}
+
+/* ===== 竖排 Tab 导航栏 ===== */
+.tab-nav {
+    display: flex;
+    flex-direction: column;
+    background: rgba(0, 20, 10, 0.95);
+    border-right: 2px solid #00aa55;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 72px;
+    z-index: 100;
+    backdrop-filter: blur(4px);
+    overflow-y: auto;
+}
+
+.tab-nav .tab-btn {
+    padding: 16px 4px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: bold;
+    color: #007744;
+    background: transparent;
+    border: none;
+    border-right: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.5px;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.tab-nav .tab-btn:hover {
+    color: #00cc66;
+    background: rgba(0, 50, 30, 0.3);
+}
+
+.tab-nav .tab-btn.active {
+    color: #00ff88;
+    border-right: 3px solid #00ff88;
+    text-shadow: 0 0 6px #00ff88;
+    background: rgba(0, 40, 20, 0.4);
+}
+
+/* ===== 主内容区 ===== */
+.app-content {
+    margin-left: 72px;
+    flex: 1;
+    min-width: 0;
+}
+
+/* ===== Tab 内容页 ===== */
+.tab-page {
+    display: none;
+    padding: 24px;
+}
+
+.tab-page.active {
+    display: block;
+}
+
+/* ===== 子导航栏 ===== */
+.sub-nav {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+    padding: 4px;
+    background: rgba(0, 20, 10, 0.6);
+    border-radius: 6px;
+    border: 1px solid #005533;
+}
+
+.sub-nav .sub-btn {
+    flex: 1;
+    padding: 8px 0;
+    text-align: center;
+    font-size: 13px;
+    font-weight: bold;
+    color: #007744;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.sub-nav .sub-btn:hover {
+    color: #00cc66;
+    background: rgba(0, 50, 30, 0.3);
+}
+
+.sub-nav .sub-btn.active {
+    color: #00ff88;
+    background: rgba(0, 60, 30, 0.5);
+    box-shadow: 0 0 4px #00ff88;
+}
+
+/* ===== 三级导航栏 ===== */
+.sub3-nav {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 12px;
+    padding: 3px;
+    background: rgba(0, 15, 8, 0.4);
+    border-radius: 4px;
+    border: 1px solid #003322;
+}
+
+.sub3-nav .sub3-btn {
+    flex: 1;
+    padding: 6px 0;
+    text-align: center;
+    font-size: 12px;
+    color: #005533;
+    background: transparent;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.sub3-nav .sub3-btn:hover {
+    color: #00aa55;
+    background: rgba(0, 40, 20, 0.3);
+}
+
+.sub3-nav .sub3-btn.active {
+    color: #00ff88;
+    background: rgba(0, 50, 25, 0.4);
+}
+
+/* ===== 子页面 ===== */
+.sub-page {
+    display: none;
+}
+
+.sub-page.active {
+    display: block;
+}
+
+/* ===== 量子子页面 ===== */
+.quantum-sub {
+    display: none;
+}
+.quantum-sub.active {
+    display: block;
+}
+.quantum-nav {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 12px;
+    padding: 3px;
+    background: rgba(15, 0, 25, 0.4);
+    border-radius: 4px;
+    border: 1px solid #2a0044;
+}
+.quantum-sub-btn {
+    flex: 1;
+    padding: 6px 0;
+    text-align: center;
+    font-size: 12px;
+    color: #664488;
+    background: transparent;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.quantum-sub-btn:hover {
+    color: #aa66cc;
+    background: rgba(40, 0, 60, 0.3);
+}
+.quantum-sub-btn.active {
+    color: #cc88ff;
+    background: rgba(50, 0, 80, 0.4);
+}
+.qms-card {
+    padding: 10px 14px;
+    border: 1px solid #332255;
+    border-radius: 6px;
+    background: rgba(15, 5, 25, 0.5);
+    margin-bottom: 8px;
+    opacity: 0.5;
+    transition: all 0.3s ease;
+}
+.qms-card.unlocked {
+    opacity: 1;
+    border-color: #8844cc;
+    background: rgba(25, 10, 40, 0.6);
+    box-shadow: 0 0 8px rgba(136, 68, 204, 0.2);
+}
+.qms-card .ach-status {
+    font-size: 11px;
+    color: #8866aa;
+    margin-top: 4px;
+}
+.qms-card.unlocked .ach-status {
+    color: #cc88ff;
+}
+
+/* ===== 宇宙尺度场景 ===== */
+.cosmos-scene {
+    position: relative;
+    height: 320px;
+    margin-top: 16px;
+    border: 2px solid #1a2a4a;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000010;
+}
+
+.cosmos-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.cosmos-planets {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.cosmos-planet {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    will-change: transform, opacity;
+    transition: opacity 0.5s ease;
+}
+
+.cosmos-planet .cp-orb {
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    box-shadow:
+        inset -8px -8px 20px rgba(0, 0, 0, 0.8),
+        inset 4px 4px 10px rgba(255, 255, 255, 0.15),
+        0 0 30px rgba(100, 150, 255, 0.2);
+}
+
+.cosmos-planet .cp-orb.is-star {
+    box-shadow:
+        inset -4px -4px 12px rgba(255, 100, 0, 0.3),
+        0 0 40px rgba(255, 200, 80, 0.6),
+        0 0 80px rgba(255, 120, 30, 0.3);
+}
+
+.cosmos-planet .cp-orb.has-ring::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 180%;
+    height: 30%;
+    border: 3px solid rgba(220, 180, 120, 0.5);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) rotate(-18deg);
+    pointer-events: none;
+}
+
+.cosmos-planet .cp-label {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #aaccff;
+    background: rgba(10, 20, 50, 0.85);
+    padding: 2px 10px;
+    border-radius: 3px;
+    border: 1px solid #3355aa;
+    white-space: nowrap;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.cosmos-planet .cp-label .cp-sub {
+    font-size: 10px;
+    color: #6688cc;
+    font-weight: normal;
+    display: block;
+}
+
+.cosmos-ruler {
+    position: absolute;
+    bottom: 20px;
+    left: 8%;
+    right: 8%;
+    z-index: 30;
+}
+
+.ruler-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.ruler-arrow {
+    color: #66aaff;
+    font-size: 14px;
+    text-shadow: 0 0 8px rgba(100, 170, 255, 0.8);
+}
+
+.ruler-line {
+    flex: 1;
+    height: 3px;
+    background: linear-gradient(90deg,
+        rgba(100, 170, 255, 0.3),
+        rgba(100, 170, 255, 0.9),
+        rgba(100, 170, 255, 0.3));
+    border-radius: 2px;
+    position: relative;
+    box-shadow: 0 0 10px rgba(100, 170, 255, 0.5);
+}
+
+.ruler-line::before,
+.ruler-line::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 12px;
+    background: #66aaff;
+    box-shadow: 0 0 6px rgba(100, 170, 255, 0.8);
+}
+
+.ruler-line::before { left: 0; }
+.ruler-line::after { right: 0; }
+
+.ruler-label {
+    text-align: center;
+    margin-top: 6px;
+    font-size: 13px;
+    color: #88bbff;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-shadow: 0 0 6px rgba(100, 170, 255, 0.6);
+    font-family: "JetBrains Mono", "Consolas", monospace;
+}
+
+.cosmos-ship {
+    position: absolute;
+    bottom: 55px;
+    font-size: 24px;
+    z-index: 40;
+    pointer-events: none;
+    will-change: left, text-shadow, transform;
+    filter: drop-shadow(0 0 8px #00ff88);
+    transition: left 0.1s linear;
+}
+
+.track-section {
+    margin-top: 18px;
+    padding: 10px 14px;
+    background: rgba(10, 15, 10, 0.7);
+    border: 1px solid #005533;
+    border-radius: 4px;
+}
+
+h1 {
+    font-size: 26px;
+    margin-bottom: 16px;
+    text-shadow: 0 0 6px #00ff88;
+}
+
+h3 {
+    font-size: 18px;
+    color: #00ffaa;
+    margin: 0 0 10px 0;
+}
+
+p {
+    font-size: 18px;
+    margin: 6px 0;
+    letter-spacing: 0.5px;
+}
+
+.value {
+    color: #00ffcc;
+    font-weight: bold;
+}
+
+#s_rate_display {
+    color: #ffcc00;
+    text-shadow: 0 0 4px rgba(255, 204, 0, 0.5);
+}
+
+.countdown {
+    font-size: 12px;
+    color: #ffaa00;
+    letter-spacing: 0.5px;
+    min-height: 18px;
+}
+
+.rel-effect {
+    font-size: 11px;
+    color: #cc6600;
+    letter-spacing: 0.5px;
+}
+
+.buy-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin: 4px 0;
+}
+
+.buy-qty-btn {
+    background: #001a0d;
+    border: 1px solid #007744;
+    padding: 4px 10px;
+    font-size: 11px;
+    margin: 0;
+    color: #00dd77;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.buy-qty-btn:hover:not(:disabled) {
+    background: #003322;
+    box-shadow: 0 0 4px #00ff88;
+}
+
+.buy-qty-btn.active {
+    background: #004433;
+    border-color: #00ff88;
+    color: #00ff88;
+}
+
+.upgrade-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+button {
+    background: #002211;
+    color: #00ff88;
+    border: 1px solid #00aa55;
+    padding: 8px 14px;
+    margin: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+button:hover:not(:disabled) {
+    background: #004422;
+    box-shadow: 0 0 6px #00ff88;
+}
+
+button:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+button:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    box-shadow: none !important;
+}
+
+.max-btn {
+    background: #003322;
+    border: 1px dashed #00aa55;
+    font-size: 12px;
+    padding: 4px 10px;
+}
+
+.max-btn:hover:not(:disabled) {
+    background: #005544;
+}
+
+/* ===== 旅程信息条 ===== */
+.track-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: #00ffcc;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.track-info .lm-current {
+    color: #00ff88;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.track-info .lm-next {
+    color: #00aa66;
+    font-size: 12px;
+}
+
+.track-speed {
+    color: #ffcc00;
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+
+.track-progress {
+    font-size: 11px;
+    color: #00aa66;
+    font-family: monospace;
+}
+
+.upgrade-section {
+    margin-top: 20px;
+    padding: 12px;
+    border-left: 3px solid #00aa55;
+}
+
+/* ===== BP 状态条 ===== */
+.bp-bar {
+    margin-top: 16px;
+    padding: 8px 14px;
+    background: rgba(30, 15, 0, 0.6);
+    border: 1px solid #aa5500;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #ffcc00;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* ===== 设置页 ===== */
+.settings-section {
+    margin-top: 16px;
+    padding: 16px;
+    border: 1px solid #005533;
+    border-radius: 8px;
+    background: rgba(10, 15, 10, 0.5);
+}
+
+.settings-section .setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 85, 51, 0.3);
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.settings-section .setting-row:last-child {
+    border-bottom: none;
+}
+
+.settings-section .setting-label {
+    font-size: 14px;
+    color: #00dd77;
+}
+
+.settings-section .setting-desc {
+    font-size: 11px;
+    color: #008855;
+}
+
+.settings-section .setting-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.settings-section input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #00ff88;
+    cursor: pointer;
+}
+
+.settings-section select {
+    background: #001a0d;
+    color: #00ff88;
+    border: 1px solid #007744;
+    padding: 6px 10px;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.settings-section select option {
+    background: #001a0d;
+    color: #00ff88;
+}
+
+.save-section {
+    margin-top: 24px;
+    padding: 12px;
+    border: 1px dashed #005533;
+    background: #0a0a0a;
+}
+
+.save-section h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    color: #00ffaa;
+}
+
+.save-row {
+    display: flex;
+    gap: 6px;
+    margin: 8px 0;
+    flex-wrap: wrap;
+}
+
+/* ===== 10槽存档网格 ===== */
+.save-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.save-slot-card {
+    border: 2px solid #005533;
+    border-radius: 8px;
+    padding: 10px;
+    background: rgba(10, 15, 10, 0.6);
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.save-slot-card.current {
+    border-color: #00ff88;
+    box-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
+}
+
+.save-slot-card.has-save {
+    border-color: #4466aa;
+}
+
+.save-slot-card .slot-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #00dd77;
+    margin-bottom: 4px;
+}
+
+.save-slot-card .slot-status {
+    font-size: 11px;
+    margin-bottom: 6px;
+    min-height: 16px;
+}
+
+.save-slot-card .slot-btns {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.save-slot-card .slot-btns button {
+    font-size: 11px;
+    padding: 4px 8px;
+    border: 1px solid #005533;
+    background: rgba(0, 30, 15, 0.8);
+    color: #00cc66;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.save-slot-card .slot-btns button:hover {
+    background: rgba(0, 60, 30, 0.8);
+    color: #00ff88;
+}
+
+.save-slot-card .slot-btns button.del-btn:hover {
+    border-color: #aa3333;
+    color: #ff6666;
+}
+
+/* ===== 流量倍速按钮 ===== */
+.flow-speed-btn {
+    min-width: 64px;
+    padding: 8px 6px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #007744;
+    background: rgba(0, 20, 10, 0.8);
+    border: 2px solid #005533;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    line-height: 1.3;
+}
+
+.flow-speed-btn:hover:not(:disabled) {
+    color: #00ff88;
+    border-color: #00aa55;
+    background: rgba(0, 50, 30, 0.4);
+}
+
+.flow-speed-btn.active {
+    color: #00ff88;
+    border-color: #00ff88;
+    background: rgba(0, 60, 30, 0.5);
+    text-shadow: 0 0 4px #00ff88;
+}
+
+.flow-speed-btn:disabled,
+.flow-speed-btn.locked {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ===== 滑块样式 ===== */
+input[type="range"] {
+    -webkit-appearance: none;
+    width: 200px;
+    height: 6px;
+    background: rgba(0, 40, 20, 0.6);
+    border-radius: 3px;
+    border: 1px solid #005533;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #00ff88;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 4px #00ff88;
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #00ff88;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 4px #00ff88;
+}
+
+/* ===== 跃迁页 ===== */
+.transcend-section {
+    text-align: center;
+    padding: 60px 20px;
+    color: #007744;
+    font-size: 18px;
+}
+
+.transcend-section .lock-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.4;
+}
+
+/* ===== 碎片卡片 ===== */
+.fragment-card {
+    margin-top: 12px;
+    padding: 12px 16px;
+    border: 1px solid #554400;
+    border-radius: 6px;
+    background: rgba(30, 25, 0, 0.5);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.fragment-card .frag-name {
+    font-size: 14px;
+    color: #ffcc00;
+    font-weight: bold;
+}
+
+.fragment-card .frag-desc {
+    font-size: 11px;
+    color: #aa8800;
+}
+
+.fragment-card .frag-status {
+    font-size: 12px;
+    color: #00ff88;
+}
+
+.fragment-card.bought {
+    border-color: #005533;
+    background: rgba(0, 30, 10, 0.4);
+    opacity: 0.7;
+}
+
+.fragment-card.bought .frag-status {
+    color: #008855;
+}
+
+/* ===== 自动化控制 ===== */
+.auto-control {
+    margin-top: 12px;
+    padding: 12px 16px;
+    border: 1px solid #003366;
+    border-radius: 6px;
+    background: rgba(0, 10, 30, 0.4);
+}
+
+.auto-control .auto-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.auto-control .auto-name {
+    font-size: 14px;
+    color: #66aaff;
+    font-weight: bold;
+}
+
+.auto-control .auto-interval {
+    font-size: 11px;
+    color: #4488cc;
+}
+
+.auto-control .auto-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+}
+
+.auto-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #00aa66;
+}
+
+.auto-toggle input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #00ff88;
+}
+
+/* ===== 悬浮状态栏 ===== */
+.float-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    background: rgba(0, 10, 5, 0.92);
+    border-top: 1px solid #00aa55;
+    padding: 8px 16px;
+    z-index: 200;
+    font-size: 13px;
+    backdrop-filter: blur(4px);
+}
+
+.float-bar .fb-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.float-bar .fb-label {
+    color: #008855;
+    font-size: 11px;
+}
+
+.float-bar .fb-value {
+    color: #00ffcc;
+    font-weight: bold;
+}
+
+.float-bar .fb-rate {
+    color: #ffcc00;
+    font-weight: bold;
+}
+
+/* 给底部留空间 */
+.tab-page {
+    padding-bottom: 50px;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #0b0b0b;
+}
+::-webkit-scrollbar-thumb {
+    background: #005533;
+}
+
+/* ===== 成就卡片 ===== */
+.ach-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.ach-card {
+    padding: 14px 16px;
+    border: 1px solid #333300;
+    border-radius: 6px;
+    background: rgba(20, 18, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    opacity: 0.4;
+    transition: all 0.3s ease;
+}
+
+.ach-card.unlocked {
+    border-color: #aa8800;
+    background: rgba(40, 30, 0, 0.7);
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(255, 204, 0, 0.15);
+}
+
+.ach-card .ach-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ach-card .ach-icon {
+    font-size: 24px;
+}
+
+.ach-card .ach-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ccaa00;
+}
+
+.ach-card.unlocked .ach-name {
+    color: #ffcc00;
+}
+
+.ach-card .ach-desc {
+    font-size: 11px;
+    color: #665500;
+}
+
+.ach-card.unlocked .ach-desc {
+    color: #997700;
+}
+
+.ach-card .ach-status {
+    font-size: 11px;
+    color: #444400;
+    margin-top: 2px;
+}
+
+.ach-card.unlocked .ach-status {
+    color: #aa8800;
+}
+
+.ach-summary {
+    font-size: 14px;
+    color: #aa8800;
+    margin-bottom: 12px;
+}
+
+.ach-summary span {
+    color: #ffcc00;
+    font-weight: bold;
+}
+
+/* ===== 离线计算弹窗 ===== */
+.offline-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.offline-overlay.active {
+    display: flex;
+}
+
+.offline-box {
+    background: rgba(0, 20, 10, 0.98);
+    border: 2px solid #00aa55;
+    border-radius: 12px;
+    padding: 32px 40px;
+    width: 90%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: 0 0 40px rgba(0, 170, 85, 0.3);
+}
+
+.offline-box h2 {
+    color: #00ff88;
+    margin: 0 0 8px 0;
+    font-size: 20px;
+    letter-spacing: 2px;
+}
+
+.offline-box .offline-sub {
+    color: #008844;
+    font-size: 12px;
+    margin-bottom: 20px;
+}
+
+.offline-progress-wrap {
+    background: rgba(0, 40, 20, 0.8);
+    border-radius: 6px;
+    height: 20px;
+    overflow: hidden;
+    margin-bottom: 8px;
+    border: 1px solid #004422;
+}
+
+.offline-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #00aa55, #00ff88);
+    border-radius: 6px;
+    transition: width 0.1s linear;
+}
+
+.offline-progress-text {
+    color: #00cc66;
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+
+.offline-speed {
+    color: #ffaa00;
+    font-size: 12px;
+    margin-bottom: 16px;
+}
+
+.offline-btns {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.offline-btns button {
+    padding: 10px 20px;
+    border: 1px solid #00aa55;
+    background: rgba(0, 50, 25, 0.6);
+    color: #00ff88;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.15s;
+}
+
+.offline-btns button:hover {
+    background: rgba(0, 100, 50, 0.8);
+    box-shadow: 0 0 12px rgba(0, 255, 136, 0.3);
+}
+
+.offline-btns button.skip-btn {
+    border-color: #aa5500;
+    color: #ffaa00;
+    background: rgba(50, 25, 0, 0.6);
+}
+
+.offline-btns button.skip-btn:hover {
+    background: rgba(100, 50, 0, 0.8);
+    box-shadow: 0 0 12px rgba(255, 170, 0, 0.3);
+}
+
+/* ===== 元素周期表 ===== */
+.periodic-table {
+    display: grid;
+    grid-template-columns: repeat(18, 1fr);
+    grid-template-rows: repeat(10, auto);
+    gap: 3px;
+    max-width: 100%;
+    overflow-x: auto;
+    padding: 4px;
+}
+
+.elem-cell {
+    min-width: 52px;
+    min-height: 48px;
+    border: 1px solid #664488;
+    background: rgba(30, 10, 50, 0.4);
+    border-radius: 4px;
+    padding: 3px 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: center;
+    position: relative;
+}
+
+/* 未购买（空心紫色） */
+.elem-cell:hover {
+    border-color: #cc88ff;
+    background: rgba(50, 20, 80, 0.7);
+    box-shadow: 0 0 8px rgba(204, 136, 255, 0.3);
+}
+
+/* 已购买（实心紫色） */
+.elem-cell.owned {
+    border-color: #aa44ff;
+    background: rgba(120, 40, 180, 0.7);
+    box-shadow: inset 0 0 12px rgba(170, 68, 255, 0.4);
+}
+
+.elem-cell.owned:hover {
+    border-color: #cc66ff;
+    background: rgba(140, 50, 200, 0.8);
+    box-shadow: 0 0 12px rgba(204, 102, 255, 0.5);
+}
+
+/* 锁定状态 */
+.elem-cell.locked {
+    opacity: 0.3;
+    cursor: not-allowed;
+    border-style: dashed;
+}
+
+.elem-cell.locked:hover {
+    border-color: #443366;
+    background: rgba(30, 10, 50, 0.4);
+    box-shadow: none;
+}
+
+/* 未实装 */
+.elem-cell.unimpl {
+    opacity: 0.25;
+    cursor: not-allowed;
+}
+
+.elem-cell.unimpl:hover {
+    border-color: #443366;
+    background: rgba(30, 10, 50, 0.4);
+    box-shadow: none;
+}
+
+/* 选中状态 */
+.elem-cell.selected {
+    border-color: #ffcc00;
+    border-width: 2px;
+    box-shadow: 0 0 12px rgba(255, 204, 0, 0.5);
+}
+
+.elem-num {
+    font-size: 9px;
+    color: #8866aa;
+    line-height: 1;
+}
+
+.elem-sym {
+    font-size: 16px;
+    font-weight: bold;
+    color: #cc88ff;
+    line-height: 1.2;
+    margin: 1px 0;
+}
+
+/* 已购买元素的符号变亮 */
+.elem-cell.owned .elem-sym {
+    color: #e0bbff;
+}
+
+.elem-cell.owned .elem-num {
+    color: #bb88dd;
+}
+
+.elem-name {
+    font-size: 9px;
+    color: #9988bb;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.elem-cell.owned .elem-name {
+    color: #c8a8e0;
+}
+
+/* ===== 元素详情面板 ===== */
+.elem-detail-card {
+    border: 1px solid #664488;
+    border-radius: 8px;
+    background: rgba(30, 10, 50, 0.5);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.elem-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.elem-detail-num {
+    font-size: 28px;
+    font-weight: bold;
+    color: #cc88ff;
+    min-width: 40px;
+    text-align: center;
+}
+
+.elem-detail-info {
+    flex: 1;
+}
+
+.elem-detail-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ddbbff;
+    margin-bottom: 4px;
+}
+
+.elem-detail-desc {
+    font-size: 13px;
+    color: #aa99cc;
+    line-height: 1.4;
+}
+
+.elem-detail-action {
+    flex-shrink: 0;
+}
+
+.elem-detail-btn {
+    padding: 8px 24px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #cc88ff;
+    background: rgba(60, 20, 90, 0.7);
+    border: 2px solid #8844cc;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.elem-detail-btn:hover:not(:disabled) {
+    background: rgba(80, 30, 120, 0.9);
+    border-color: #cc88ff;
+    box-shadow: 0 0 10px rgba(204, 136, 255, 0.4);
+}
+
+.elem-detail-btn:disabled,
+.elem-detail-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.elem-detail-btn.owned {
+    color: #88ff88;
+    border-color: #448844;
+    background: rgba(20, 40, 20, 0.6);
+}
+
+/* 元素锁定图标 */
+.elem-lock-icon {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 10px;
+    opacity: 0.6;
+}
+
+.elem-cell.locked .elem-sym {
+    opacity: 0.4;
+}
+
+/* 列锁定提示 */
+.col-lock-notice {
+    text-align: center;
+    padding: 10px 16px;
+    color: #ff8866;
+    font-size: 13px;
+    background: rgba(40, 10, 10, 0.4);
+    border: 1px solid #664433;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+    </style>
+</head>
+<body>
+    <!-- Tab 导航（竖排左侧） -->
+    <nav class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('distance', this)" data-i18n="nav.distance">📏 距离</button>
+        <button class="tab-btn" onclick="switchTab('leap', this)" data-i18n="nav.leap">🚀 跃迁</button>
+        <button class="tab-btn" id="tabbtn_automation" onclick="switchTab('automation', this)" style="display:none;" data-i18n="nav.automation">🤖 自动化</button>
+        <button class="tab-btn" onclick="switchTab('achievements', this)" data-i18n="nav.achievements">🏆 成就</button>
+        <button class="tab-btn" onclick="switchTab('stats', this)" data-i18n="nav.stats">📊 统计</button>
+        <button class="tab-btn" onclick="switchTab('flow', this)" data-i18n="nav.flow">⚡ 流量</button>
+        <button class="tab-btn" onclick="switchTab('settings', this)" data-i18n="nav.settings">⚙️ 设置</button>
+    </nav>
+
+    <!-- 主内容区 -->
+    <div class="app-content">
+
+    <!-- ========== 距离页 ========== -->
+    <div class="tab-page active" id="tab_distance">
+        <!-- 距离子导航 -->
+        <div class="sub-nav" style="margin-bottom:12px;">
+            <button class="sub-btn active" onclick="switchDistTab('journey', this)" data-i18n="dist.subNav.journey">🚀 旅途</button>
+            <button class="sub-btn" onclick="switchDistTab('distupgrade', this)" data-i18n="dist.subNav.upgrades">⬆️ 距离升级</button>
+        </div>
+
+        <!-- 旅途子页 -->
+        <div class="sub-page active" id="dist_journey">
+            <h1 data-i18n="dist.title">🚀 Speed Idle</h1>
+
+            <p><span data-i18n="dist.distance">距离：</span><span class="value" id="s_display"></span></p>
+            <p><span data-i18n="dist.distanceRate">距离增加：</span><span class="value" id="s_rate_display"></span></p>
+            <p><span data-i18n="dist.speed">速度：</span><span class="value" id="v_display"></span></p>
+            <p><span data-i18n="dist.accel">加速度：</span><span class="value" id="a_display"></span> <span class="rel-effect" id="a_rel_effect"></span></p>
+            <p><span data-i18n="dist.jerk">急动度：</span><span class="value" id="j_display"></span></p>
+
+            <!-- 宇宙尺度场景 -->
+            <div class="cosmos-scene" id="cosmos_scene">
+                <canvas class="cosmos-bg" id="cosmos_bg"></canvas>
+                <div class="cosmos-planets" id="cosmos_planets"></div>
+                <div class="cosmos-ruler">
+                    <div class="ruler-bar">
+                        <div class="ruler-arrow left">◀</div>
+                        <div class="ruler-line" id="ruler_line"></div>
+                        <div class="ruler-arrow right">▶</div>
+                    </div>
+                    <div class="ruler-label" id="ruler_label">—</div>
+                </div>
+                <div class="cosmos-ship" id="cosmos_ship">🚀</div>
+            </div>
+
+            <!-- 旅程信息条 -->
+            <div class="track-section">
+                <div class="track-info">
+                    <span class="lm-current" id="track_landmark_current">🚶 起点</span>
+                    <span class="track-speed" id="track_speed">▶</span>
+                    <span class="lm-next" id="track_landmark_next">→ 🚌 公交车</span>
+                    <span class="track-progress" id="track_progress_text">10^0 → 10^1 (0%)</span>
+                </div>
+            </div>
+
+            <!-- BP / 折扣状态条 -->
+            <div id="bp_bar" class="bp-bar" style="display:none;">
+                <span><span data-i18n="journey.bp">💎 BP: </span><strong id="bp_bar_value">0.000e0</strong></span>
+                <span><span data-i18n="journey.discount">折扣: </span><strong id="bp_bar_discount" style="color:#ffaa00;">×1.000e0 (无折扣)</strong></span>
+                <span><span data-i18n="journey.upgrade4Bonus">升级4加成: </span><strong id="bp_bar_tp" style="color:#00ffcc;">+0.000e0%</strong></span>
+            </div>
+
+            <!-- 基础升级区 -->
+            <div class="upgrade-section">
+                <div class="buy-row" id="buy_qty_row">
+                    <span data-i18n="dist.buyQty">购买数量：</span>
+                    <button class="buy-qty-btn active" data-qty="1">×1</button>
+                    <button class="buy-qty-btn" data-qty="10">×10</button>
+                    <button class="buy-qty-btn" data-qty="100">×100</button>
+                </div>
+
+                <p style="margin-top:10px;"><span data-i18n="dist.speedMult">速度倍率：</span><span class="value" id="v_display2"></span></p>
+                <div class="upgrade-row">
+                    <button id="v_upgrade">
+                        <span data-i18n="dist.speedBtn">🚀 速度</span> Lv<span id="v_level">0.000e0</span><br>
+                        <span id="v_upgrade_cost">3.000e0</span> <span data-i18n="dist.distanceUnit">距离</span>
+                    </button>
+                    <button class="max-btn" id="v_max" style="display:none;">
+                        <span data-i18n="dist.maxBuy">⚡ 最大购买</span>（可买 <span id="v_max_count">0.000e0</span> <span data-i18n="dist.maxBuyLevels">级</span>）
+                    </button>
+                </div>
+                <div class="countdown" id="v_countdown">—</div>
+
+                <p style="margin-top:10px;"><span data-i18n="dist.accelBonus">加速度加成：</span><span class="value" id="a_display2"></span></p>
+                <div class="upgrade-row">
+                    <button id="a_upgrade">
+                        <span data-i18n="dist.accelBtn">⚡ 加速度</span> Lv<span id="a_level">0.000e0</span><br>
+                        <span id="a_upgrade_cost">5.000e0</span> <span data-i18n="dist.distanceUnit">距离</span>
+                    </button>
+                    <button class="max-btn" id="a_max" style="display:none;">
+                        <span data-i18n="dist.maxBuy">⚡ 最大购买</span>（可买 <span id="a_max_count">0.000e0</span> <span data-i18n="dist.maxBuyLevels">级</span>）
+                    </button>
+                </div>
+                <div class="countdown" id="a_countdown">—</div>
+
+                <p style="margin-top:10px;"><span data-i18n="dist.jerkBonus">急动度加成：</span><span class="value" id="j_display2"></span></p>
+                <div class="upgrade-row">
+                    <button id="j_upgrade">
+                        <span data-i18n="dist.jerkBtn">🧩 急动度</span> Lv<span id="j_level">0.000e0</span><br>
+                        <span id="j_upgrade_cost">1.000e1</span> <span data-i18n="dist.distanceUnit">距离</span>
+                    </button>
+                    <button class="max-btn" id="j_max" style="display:none;">
+                        <span data-i18n="dist.maxBuy">⚡ 最大购买</span>（可买 <span id="j_max_count">0.000e0</span> <span data-i18n="dist.maxBuyLevels">级</span>）
+                    </button>
+                </div>
+                <div class="countdown" id="j_countdown">—</div>
+
+                <!-- Snap冲击波 -->
+                <div id="snap_section" style="display:none; margin-top:16px; padding:12px; border:1px solid #553388; border-radius:8px; background:rgba(20,5,35,0.4);">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <span style="font-size:16px; color:#cc88ff;" data-i18n="journey.snap">💫 Snap冲击波</span>
+                            <span style="font-size:12px; color:#8866aa; margin-left:8px;" data-i18n="journey.snapDesc">生产急动度</span>
+                        </div>
+                        <div style="font-size:18px; color:#cc88ff; font-weight:bold;">
+                            ×<span id="snap_count">0.000e0</span>
+                        </div>
+                    </div>
+                    <div style="font-size:11px; color:#664488; margin-top:4px;" data-i18n="journey.snapFormula">数量 = √(量子超越次数)，实时更新</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 距离子页（升级） -->
+        <div class="sub-page" id="dist_distupgrade">
+            <h1 data-i18n="dist.upgrades.title">⬆️ 距离升级</h1>
+
+            <!-- 一次性升级 -->
+            <h3 style="color:#aa8800;margin-top:0;" data-i18n="dist.upgrades.oneTime">一次性升级</h3>
+
+            <div class="ach-card" style="opacity:1;">
+                <div class="ach-header"><span class="ach-icon">🏁</span><span class="ach-name">U1-1 速度翻倍</span></div>
+                <div class="ach-desc" data-i18n="dist.upgrades.u1_1.name">速度的效果 ×2</div>
+                <div id="dist_u1_1_eff" style="font-size:11px;color:#00cc66;margin:4px 0;">速度效果 ×2</div>
+                <button id="dist_u1_1_btn" onclick="buyDistU1(1)" style="padding:6px 16px;border:1px solid #00aa55;background:rgba(0,50,25,0.6);color:#00ff88;border-radius:4px;cursor:pointer;">购买 — 1.000e6 距离</button>
+            </div>
+
+            <div class="ach-card" style="opacity:1;">
+                <div class="ach-header"><span class="ach-icon">🌀</span><span class="ach-name">U1-2 对数加速</span></div>
+                <div class="ach-desc" data-i18n="dist.upgrades.u1_2.name">速度以 lg₁₀₀(1+v) 倍率加强自身</div>
+                <div id="dist_u1_2_eff" style="font-size:11px;color:#00cc66;margin:4px 0;">当前: ×1.000e0</div>
+                <button id="dist_u1_2_btn" onclick="buyDistU1(2)" style="padding:6px 16px;border:1px solid #00aa55;background:rgba(0,50,25,0.6);color:#00ff88;border-radius:4px;cursor:pointer;">购买 — 1.000e8 距离</button>
+            </div>
+
+            <div class="ach-card" style="opacity:1;">
+                <div class="ach-header"><span class="ach-icon">🌌</span><span class="ach-name">U1-3 旅程馈赠</span></div>
+                <div class="ach-desc" data-i18n="dist.upgrades.u1_3.name">获得 lg₁₀₀(距离最大值+1) 个免费的速度等级</div>
+                <div id="dist_u1_3_eff" style="font-size:11px;color:#00cc66;margin:4px 0;">当前: +0.000e0 级</div>
+                <button id="dist_u1_3_btn" onclick="buyDistU1(3)" style="padding:6px 16px;border:1px solid #00aa55;background:rgba(0,50,25,0.6);color:#00ff88;border-radius:4px;cursor:pointer;">购买 — 1.000e14 距离</button>
+            </div>
+
+            <!-- 可重复购买升级 -->
+            <h3 style="color:#aa8800;margin-top:20px;" data-i18n="dist.upgrades.repeatable">可重复购买升级</h3>
+
+            <div class="ach-card" style="opacity:1;">
+                <div class="ach-header"><span class="ach-icon">🏷️</span><span class="ach-name">U2-1 急动度折扣</span></div>
+                <div class="ach-desc">急动度(J)升级价格 ×0.7^n（n=已购级数）<br>初始价格 1000 距离，每买一次价格 ×100</div>
+                <div id="dist_u2_1_eff" style="font-size:11px;color:#00cc66;margin:4px 0;">当前: ×1.000e0 (无折扣) → 下一级: 7.000e1%</div>
+                <span id="dist_u2_1_cnt" style="font-size:11px;color:#aa8800;">已购 0.000e0 级</span>
+                <div style="display:flex; gap:4px; margin-top:4px;">
+                    <button id="dist_u2_1_btn" onclick="buyDistU2(1)" style="padding:6px 16px;border:1px solid #00aa55;background:rgba(0,50,25,0.6);color:#00ff88;border-radius:4px;cursor:pointer;">购买 — 1.000e3 距离</button>
+                    <button id="dist_u2_1_max_btn" onclick="buyMaxDistU2(1)" style="padding:6px 12px;border:1px solid #00aa55;background:rgba(0,50,25,0.6);color:#00ff88;border-radius:4px;cursor:pointer;font-size:12px;"><span data-i18n="dist.upgrades.maxBtn">最大 ×</span><span id="u2_1_max_count">0.000e0</span></button>
+                </div>
+            </div>
+
+            <div class="ach-card" style="opacity:1;">
+                <div class="ach-header"><span class="ach-icon">⚙️</span><span class="ach-name">U2-2 速度引擎</span></div>
+                <div class="ach-desc">急动度以一定倍率生产速度<br>初始价格 1e5 距离，每买一次价格 ×1e5<br>生产速率: 0 → 1 → 10 → 100 ...</div>
+                <div id="dist_u2_2_eff" style="font-size:11px;color:#00cc66;margin:4px 0;">当前: 0.000e0 → 下一级: 1.000e0</div>
+                <span id="dist_u2_2_cnt" style="font-size:11px;color:#aa8800;">已购 0.000e0 级</span>
+                <div style="display:flex; gap:4px; margin-top:4px;">
+                    <button id="dist_u2_2_btn" onclick="buyDistU2(2)" style="padding:6px 16px;border:1px solid #00aa55;background:rgba(0,50,25,0.6);color:#00ff88;border-radius:4px;cursor:pointer;">购买 — 1.000e5 距离</button>
+                    <button id="dist_u2_2_max_btn" onclick="buyMaxDistU2(2)" style="padding:6px 12px;border:1px solid #00aa55;background:rgba(0,50,25,0.6);color:#00ff88;border-radius:4px;cursor:pointer;font-size:12px;"><span data-i18n="dist.upgrades.maxBtn">最大 ×</span><span id="u2_2_max_count">0.000e0</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 跃迁页 ========== -->
+    <div class="tab-page" id="tab_leap">
+        <!-- 二级导航 -->
+        <div class="sub-nav">
+            <button class="sub-btn active" onclick="switchLeapTab('transcend', this)" data-i18n="trans.subNav">🌌 超越</button>
+            <button class="sub-btn" onclick="switchLeapTab('quantum', this)" data-i18n="trans.subNav.quantum">⚛️ 量子</button>
+        </div>
+
+        <!-- 超越子页 -->
+        <div class="sub-page active" id="leap_transcend">
+            <!-- 三级导航 -->
+            <div class="sub3-nav">
+                <button class="sub3-btn active" onclick="switchTranscendTab('reset', this)" data-i18n="trans.reset">🌌 超越重置</button>
+                <button class="sub3-btn" onclick="switchTranscendTab('upgrade', this)" data-i18n="trans.upgrades">⬆️ 超越升级</button>
+                <button class="sub3-btn" onclick="switchTranscendTab('fragments', this)" data-i18n="trans.fragments">💠 超越碎片</button>
+                <button class="sub3-btn" onclick="switchTranscendTab('milestones', this)" data-i18n="trans.milestones">🏅 里程碑</button>
+                <button class="sub3-btn" onclick="switchTranscendTab('reactor', this)" data-i18n="trans.reactor">⚛️ 核反应堆</button>
+                <button class="sub3-btn" onclick="switchTranscendTab('challenges', this)" data-i18n="trans.challenges">🏆 超越挑战</button>
+            </div>
+
+            <!-- 未解锁 -->
+            <div id="transcend_lock" style="text-align:center; padding:60px 20px;">
+                <div style="font-size:48px; opacity:0.4; margin-bottom:16px;">🔒</div>
+                <p style="color:#00ff88; font-size:20px; font-weight:bold;" data-i18n="trans.reset.locked">超越尚未解锁</p>
+                <p style="color:#00aa66; margin-top:12px; font-size:14px;" data-i18n="trans.reset.lockedDesc">速度超过光速 (3e8 m/s) 后解锁超越重置</p>
+                <div style="margin-top:20px; padding:12px; border:1px solid #005533; border-radius:8px; background:rgba(0,20,10,0.5); max-width:400px; margin-left:auto; margin-right:auto;">
+                    <div style="color:#008855; font-size:12px;" data-i18n="trans.reset.unlockProgress">解锁进度</div>
+                    <div style="color:#00ffcc; font-size:18px; margin-top:4px;" id="transcend_status">速度 1.000e0 / 3.000e8 (0.000e0% 对数)</div>
+                    <div style="margin-top:8px; height:6px; background:#001a0d; border-radius:3px; overflow:hidden;">
+                        <div id="transcend_progress_bar" style="height:100%; width:0%; background:linear-gradient(90deg, #00aa55, #00ff88); border-radius:3px; transition:width 0.3s;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 已解锁 -->
+            <div id="transcend_content" style="display:none;">
+                <!-- 超越重置子页 -->
+                <div class="sub-page active" id="tc_reset">
+                    <h1 data-i18n="trans.reset.title">🌌 超越重置</h1>
+                    <p style="color:#008855; font-size:13px;" id="transcend_count">第 1.000e0 次超越</p>
+
+                    <div class="settings-section">
+                        <h3 data-i18n="trans.reset.bp">💎 超越点数 (BP)</h3>
+                        <div class="setting-row">
+                            <div>
+                                <div class="setting-label" id="transcend_bp">0.000e0 BP</div>
+                                <div class="setting-desc" data-i18n="trans.reset.bpLowers">BP 降低升级价格</div>
+                            </div>
+                            <div class="setting-control" style="font-size:13px;">
+                                <span data-i18n="journey.discount">折扣: </span><span id="transcend_discount" style="color:#00aa66;">×1.000e0 (无折扣)</span>
+                            </div>
+                        </div>
+                        <div class="setting-row">
+                            <div>
+                                <div class="setting-label" id="transcend_gain">+ 0.000e0 BP</div>
+                                <div class="setting-desc" data-i18n="trans.reset.gain">本次超越预计获得 = lg(速度)^0.75</div>
+                                <div class="setting-desc" id="transcend_frag6_info" style="display:none; color:#aa8800;"></div>
+                            </div>
+                            <div class="setting-control">
+                                <button id="transcend_btn" style="font-size:16px; padding:12px 24px;" disabled data-i18n="trans.reset.btn">
+                                    🌌 超越重置
+                                </button>
+                            </div>
+                        </div>
+                        <!-- 活跃挑战状态 -->
+                        <div id="transcend_challenge_status" style="text-align:center; padding:8px; margin-top:4px; color:#ffcc00; font-size:14px; display:none;"></div>
+                        <!-- 重启超越按钮 -->
+                        <div style="text-align:center; margin-top:4px;">
+                            <button id="transcend_restart_btn" style="font-size:13px; padding:8px 20px; border-color:#884400; color:#ffaa00; display:none;" onclick="doRestartTranscend()" data-i18n="trans.reset.restart">
+                                🔄 重启超越
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 超越升级子页 -->
+                <div class="sub-page" id="tc_upgrade">
+                    <div class="tc-lock-msg" style="text-align:center;padding:40px 20px;">
+                        <div style="font-size:40px;opacity:0.4;margin-bottom:12px;">🔒</div>
+                        <p style="color:#ffaa00;font-size:16px;font-weight:bold;" data-i18n="trans.reset.upgradeLocked">超越升级尚未解锁</p>
+                        <p style="color:#aa8800;margin-top:8px;font-size:13px;" data-i18n="trans.reset.upgradeLockedDesc">完成第 1 次超越后解锁</p>
+                    </div>
+                    <h1 data-i18n="trans.upgrades">⬆️ 超越升级</h1>
+                    <div class="settings-section" style="border-color:#aa5500; background:rgba(30,15,0,0.5);">
+                        <h3 style="color:#ffaa00;" data-i18n="trans.upgrade4.title">⬆️ 升级4 — 超越加成</h3>
+                        <div class="setting-row">
+                            <div>
+                                <div class="setting-label" style="color:#ffcc00;" id="transcend_tp">Lv0.000e0</div>
+                                <div class="setting-desc" id="transcend_tp_desc">所有升级效果 +0.000e0% (加数)</div>
+                            </div>
+                            <div class="setting-control" style="flex-direction:column; align-items:flex-end; gap:4px;">
+                                <span style="font-size:12px; color:#aa8800;" id="transcend_tp_cost">1.000e0 BP</span>
+                                <div style="display:flex; gap:4px;">
+                                    <button id="transcend_tp_btn" style="border-color:#aa5500; color:#ffcc00;">
+                                        ⬆️ 升级4 — 1.000e0 BP
+                                    </button>
+                                    <button id="transcend_tp_max_btn" onclick="buyMaxTP()" style="border-color:#aa5500; color:#ffcc00; padding:4px 8px; font-size:12px;">
+                                        <span data-i18n="dist.upgrades.maxBtn">最大 ×</span><span id="tp_max_count">0.000e0</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 升级5（元素5解锁） -->
+                    <div class="settings-section" id="upgrade5_section" style="display:none; border-color:#8844cc; background:rgba(20,5,35,0.5);">
+                        <h3 style="color:#cc88ff;" data-i18n="trans.upgrade5.title">⬆️ 升级5 — 升级4增强</h3>
+                        <div class="setting-row">
+                            <div>
+                                <div class="setting-label" style="color:#cc88ff;" id="transcend_tp5">Lv0.000e0</div>
+                                <div class="setting-desc" id="transcend_tp5_desc">升级4效果 +0.000e0% (累加乘数)</div>
+                            </div>
+                            <div class="setting-control" style="flex-direction:column; align-items:flex-end; gap:4px;">
+                                <span style="font-size:12px; color:#8866aa;" id="transcend_tp5_cost">1.000e2 BP</span>
+                                <div style="display:flex; gap:4px;">
+                                    <button id="transcend_tp5_btn" onclick="buyUpgrade5()" style="border-color:#8844cc; color:#cc88ff;">
+                                        ⬆️ 升级5 — 1.000e2 BP
+                                    </button>
+                                    <button id="transcend_tp5_max_btn" onclick="buyMaxUpgrade5()" style="border-color:#8844cc; color:#cc88ff; padding:4px 8px; font-size:12px;">
+                                        <span data-i18n="dist.upgrades.maxBtn">最大 ×</span><span id="tp5_max_count">0.000e0</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 超越碎片子页 -->
+                <div class="sub-page" id="tc_fragments">
+                    <div class="tc-lock-msg" style="text-align:center;padding:40px 20px;">
+                        <div style="font-size:40px;opacity:0.4;margin-bottom:12px;">🔒</div>
+                        <p style="color:#ffaa00;font-size:16px;font-weight:bold;" data-i18n="trans.reset.fragLocked">超越碎片尚未解锁</p>
+                        <p style="color:#aa8800;margin-top:8px;font-size:13px;" data-i18n="trans.reset.fragLockedDesc">完成第 5 次超越后解锁</p>
+                    </div>
+                    <h1 data-i18n="trans.fragments">💠 超越碎片</h1>
+                    <p style="color:#008855; font-size:13px;" data-i18n="trans.reset.fragOneTime">一次性购买，永久生效</p>
+
+                    <div class="fragment-card" id="frag_card_1">
+                        <div>
+                            <div class="frag-name" data-i18n="trans.frag1.name">碎片1 — 速度共鸣</div>
+                            <div class="frag-desc" data-i18n="trans.frag1.desc">速度获得倍率 × lg(持有BP+1)</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:12px; color:#ffaa00;">10 BP</div>
+                            <button id="frag_btn_1" onclick="buyFragment(1)" data-i18n="trans.frag.buy">购买</button>
+                        </div>
+                    </div>
+
+                    <div class="fragment-card" id="frag_card_2">
+                        <div>
+                            <div class="frag-name" data-i18n="trans.frag2.name">碎片2 — 自动化核心</div>
+                            <div class="frag-desc" data-i18n="trans.frag2.desc">解锁主导航栏"自动化"页面</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:12px; color:#ffaa00;">15 BP</div>
+                            <button id="frag_btn_2" onclick="buyFragment(2)" data-i18n="trans.frag.buy">购买</button>
+                        </div>
+                    </div>
+
+                    <div class="fragment-card" id="frag_card_3">
+                        <div>
+                            <div class="frag-name" data-i18n="trans.frag3.name">碎片3 — 升级共鸣</div>
+                            <div class="frag-desc" data-i18n="trans.frag3.desc">升级1-3效果 × lg(距离+1)</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:12px; color:#ffaa00;">1000 BP</div>
+                            <button id="frag_btn_3" onclick="buyFragment(3)" data-i18n="trans.frag.buy">购买</button>
+                        </div>
+                    </div>
+
+                    <div class="fragment-card" id="frag_card_4">
+                        <div>
+                            <div class="frag-name" data-i18n="trans.frag4.name">碎片4 — 超越协议</div>
+                            <div class="frag-desc" data-i18n="trans.frag4.desc">解锁自动化中的自动超越重置</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:12px; color:#ffaa00;">1500 BP</div>
+                            <button id="frag_btn_4" onclick="buyFragment(4)" data-i18n="trans.frag.buy">购买</button>
+                        </div>
+                    </div>
+
+                    <div class="fragment-card" id="frag_card_5">
+                        <div>
+                            <div class="frag-name" data-i18n="trans.frag5.name">碎片5 — 时空曲率</div>
+                            <div class="frag-desc" data-i18n="trans.frag5.desc">相对论debuff弱化 log10(距离) 倍（实时更新）</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:12px; color:#ffaa00;">5000 BP</div>
+                            <button id="frag_btn_5" onclick="buyFragment(5)" data-i18n="trans.frag.buy">购买</button>
+                        </div>
+                    </div>
+
+                    <div class="fragment-card" id="frag_card_6">
+                        <div>
+                            <div class="frag-name" data-i18n="trans.frag6.name">碎片6 — 永动增益</div>
+                            <div class="frag-desc" data-i18n="trans.frag6.desc">每购买一个升级（速度/加速度/急动度/升级1-5），本次超越获取BP ×1.001</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:12px; color:#ffaa00;">40000 BP</div>
+                            <button id="frag_btn_6" onclick="buyFragment(6)" data-i18n="trans.frag.buy">购买</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 里程碑子页 -->
+            <div class="sub-page" id="tc_milestones">
+                <h1 data-i18n="trans.milestones">🏅 超越里程碑</h1>
+                <div class="ach-summary"><span data-i18n="trans.ms.counter">已解锁: </span><span id="milestone_counter">0.000e0/1.000e1</span>　BP 获取倍率: <span id="milestone_mult" style="color:#00aa66;">×1.000e0 (无加成)</span></div>
+                <div class="ach-grid">
+                    <div class="ach-card" id="ms_0"><div class="ach-header"><span class="ach-icon">🌟</span><span class="ach-name" data-i18n="trans.ms1.name">1次超越</span></div><div class="ach-desc"><span data-i18n="trans.ms1.name">初次超越</span> — <span data-i18n="trans.ms1.reward">解锁超越升级</span></div><div class="ach-status">🔒 未解锁 (需要 1 次超越)</div></div>
+                    <div class="ach-card" id="ms_1"><div class="ach-header"><span class="ach-icon">🌟</span><span class="ach-name" data-i18n="trans.ms2.name">2次超越</span></div><div class="ach-desc"><span data-i18n="trans.ms2.name">再次超越</span> — <span data-i18n="trans.ms2.reward">+0.5× BP获取</span></div><div class="ach-status">🔒 未解锁 (需要 2 次超越)</div></div>
+                    <div class="ach-card" id="ms_2"><div class="ach-header"><span class="ach-icon">🌟</span><span class="ach-name" data-i18n="trans.ms3.name">3次超越</span></div><div class="ach-desc"><span data-i18n="trans.ms3.name">三次突破</span> — <span data-i18n="trans.ms3.reward">+0.5× BP获取</span></div><div class="ach-status">🔒 未解锁 (需要 3 次超越)</div></div>
+                    <div class="ach-card" id="ms_3"><div class="ach-header"><span class="ach-icon">🌟</span><span class="ach-name" data-i18n="trans.ms4.name">5次超越</span></div><div class="ach-desc"><span data-i18n="trans.ms4.name">五次轮回</span> — <span data-i18n="trans.ms4.reward">+0.5× BP获取，解锁超越碎片</span></div><div class="ach-status">🔒 未解锁 (需要 5 次超越)</div></div>
+                    <div class="ach-card" id="ms_4"><div class="ach-header"><span class="ach-icon">🌟</span><span class="ach-name" data-i18n="trans.ms5.name">7次超越</span></div><div class="ach-desc"><span data-i18n="trans.ms5.name">七重天</span> — <span data-i18n="trans.ms5.reward">+0.5× BP获取</span></div><div class="ach-status">🔒 未解锁 (需要 7 次超越)</div></div>
+                    <div class="ach-card" id="ms_5"><div class="ach-header"><span class="ach-icon">🌟</span><span class="ach-name" data-i18n="trans.ms6.name">10次超越</span></div><div class="ach-desc"><span data-i18n="trans.ms6.name">十全十美</span> — <span data-i18n="trans.ms6.reward">+0.5× BP获取</span></div><div class="ach-status">🔒 未解锁 (需要 10 次超越)</div></div>
+                    <div class="ach-card" id="ms_6"><div class="ach-header"><span class="ach-icon">🌟</span><span class="ach-name" data-i18n="trans.ms7.name">15次超越</span></div><div class="ach-desc"><span data-i18n="trans.ms7.name">十五明月</span> — <span data-i18n="trans.ms7.reward">+0.5× BP获取</span></div><div class="ach-status">🔒 未解锁 (需要 15 次超越)</div></div>
+                    <div class="ach-card" id="ms_7"><div class="ach-header"><span class="ach-icon">🌟</span><span class="ach-name" data-i18n="trans.ms8.name">20次超越</span></div><div class="ach-desc"><span data-i18n="trans.ms8.name">二十载</span> — <span data-i18n="trans.ms8.reward">+0.5× BP获取</span></div><div class="ach-status">🔒 未解锁 (需要 20 次超越)</div></div>
+                    <div class="ach-card" id="ms_8"><div class="ach-header"><span class="ach-icon">🌟</span><span class="ach-name" data-i18n="trans.ms9.name">100次超越</span></div><div class="ach-desc"><span data-i18n="trans.ms9.name">百世轮回</span> — <span data-i18n="trans.ms9.reward">+0.5× BP获取</span></div><div class="ach-status">🔒 未解锁 (需要 100 次超越)</div></div>
+                    <div class="ach-card" id="ms_9"><div class="ach-header"><span class="ach-icon">🌟</span><span class="ach-name" data-i18n="trans.ms10.name">1000次超越</span></div><div class="ach-desc"><span data-i18n="trans.ms10.name">千禧传说</span> — <span data-i18n="trans.ms10.reward">+0.5× BP获取</span></div><div class="ach-status">🔒 未解锁 (需要 1000 次超越)</div></div>
+                </div>
+            </div>
+
+            <!-- 核反应堆子页 -->
+            <div class="sub-page" id="tc_reactor">
+                <h1 data-i18n="reactor.title">⚛️ 核反应堆</h1>
+                <p style="color:#0088aa; font-size:13px; margin-bottom:12px;" data-i18n="reactor.desc">5层核反应堆生产复制能量，复制能量为加速度效果提供√能量加成</p>
+                <div id="reactor_content">
+                    <div class="settings-section" style="border-color:#006688; background:rgba(0,20,30,0.4);">
+                        <h3 style="color:#00ccff;" data-i18n="reactor.energy">💎 复制能量</h3>
+                        <div class="setting-row">
+                            <div>
+                                <div class="setting-label" style="color:#00ddff;" id="reactor_energy">1.000e0</div>
+                                <div class="setting-desc" data-i18n="reactor.energyDesc">复制能量为加速度效果提供√加成</div>
+                            </div>
+                            <div class="setting-control">
+                                <span data-i18n="reactor.bonus">加速度加成: </span><span id="reactor_bonus" style="color:#00ccaa; font-weight:bold;">×1.000e0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="reactor_layer_4" class="settings-section" style="border-color:#004488; background:rgba(0,10,30,0.4); margin-top:8px;">
+                        <h3 style="color:#4488ff;">⚛️ <span data-i18n="reactor.layer5">层5 — 顶层</span></h3>
+                        <div class="setting-row">
+                            <div>
+                                <div class="setting-desc"><span data-i18n="reactor.quantity">数量: </span><span id="reactor_layer_qty_4">0</span>　<span data-i18n="reactor.efficiency">效率: </span><span id="reactor_layer_eff_4">×1</span>　<span data-i18n="reactor.purchases">购买次数: </span><span id="reactor_layer_pc_4">0</span></div>
+                                <div class="setting-desc"><span data-i18n="reactor.produces">生产: </span><span data-i18n="reactor.layer4Prod">层4</span>　<span data-i18n="reactor.rate">速率: </span><span id="reactor_layer_rate_4">0/s</span></div>
+                            </div>
+                            <div class="setting-control">
+                                <div style="font-size:12px; color:#4488aa; margin-bottom:4px;"><span data-i18n="reactor.price">价格: </span><span id="reactor_layer_price_4">1 BP</span></div>
+                                <button id="reactor_layer_btn_4" onclick="buyReactorLayer(4)" style="border-color:#224466; color:#4488ff;"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="reactor_layer_3" class="settings-section" style="border-color:#004488; background:rgba(0,10,30,0.4); margin-top:8px;">
+                        <h3 style="color:#4488ff;">⚛️ <span data-i18n="reactor.layer4">层4</span></h3>
+                        <div class="setting-row">
+                            <div>
+                                <div class="setting-desc"><span data-i18n="reactor.quantity">数量: </span><span id="reactor_layer_qty_3">0</span>　<span data-i18n="reactor.efficiency">效率: </span><span id="reactor_layer_eff_3">×1</span>　<span data-i18n="reactor.purchases">购买次数: </span><span id="reactor_layer_pc_3">0</span></div>
+                                <div class="setting-desc"><span data-i18n="reactor.produces">生产: </span><span data-i18n="reactor.layer3Prod">层3</span>　<span data-i18n="reactor.rate">速率: </span><span id="reactor_layer_rate_3">0/s</span></div>
+                            </div>
+                            <div class="setting-control">
+                                <div style="font-size:12px; color:#4488aa; margin-bottom:4px;"><span data-i18n="reactor.price">价格: </span><span id="reactor_layer_price_3">1 BP</span></div>
+                                <button id="reactor_layer_btn_3" onclick="buyReactorLayer(3)" style="border-color:#224466; color:#4488ff;"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="reactor_layer_2" class="settings-section" style="border-color:#004488; background:rgba(0,10,30,0.4); margin-top:8px;">
+                        <h3 style="color:#4488ff;">⚛️ <span data-i18n="reactor.layer3">层3</span></h3>
+                        <div class="setting-row">
+                            <div>
+                                <div class="setting-desc"><span data-i18n="reactor.quantity">数量: </span><span id="reactor_layer_qty_2">0</span>　<span data-i18n="reactor.efficiency">效率: </span><span id="reactor_layer_eff_2">×1</span>　<span data-i18n="reactor.purchases">购买次数: </span><span id="reactor_layer_pc_2">0</span></div>
+                                <div class="setting-desc"><span data-i18n="reactor.produces">生产: </span><span data-i18n="reactor.layer2Prod">层2</span>　<span data-i18n="reactor.rate">速率: </span><span id="reactor_layer_rate_2">0/s</span></div>
+                            </div>
+                            <div class="setting-control">
+                                <div style="font-size:12px; color:#4488aa; margin-bottom:4px;"><span data-i18n="reactor.price">价格: </span><span id="reactor_layer_price_2">1 BP</span></div>
+                                <button id="reactor_layer_btn_2" onclick="buyReactorLayer(2)" style="border-color:#224466; color:#4488ff;"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="reactor_layer_1" class="settings-section" style="border-color:#004488; background:rgba(0,10,30,0.4); margin-top:8px;">
+                        <h3 style="color:#4488ff;">⚛️ <span data-i18n="reactor.layer2">层2</span></h3>
+                        <div class="setting-row">
+                            <div>
+                                <div class="setting-desc"><span data-i18n="reactor.quantity">数量: </span><span id="reactor_layer_qty_1">0</span>　<span data-i18n="reactor.efficiency">效率: </span><span id="reactor_layer_eff_1">×1</span>　<span data-i18n="reactor.purchases">购买次数: </span><span id="reactor_layer_pc_1">0</span></div>
+                                <div class="setting-desc"><span data-i18n="reactor.produces">生产: </span><span data-i18n="reactor.layer1Prod">层1</span>　<span data-i18n="reactor.rate">速率: </span><span id="reactor_layer_rate_1">0/s</span></div>
+                            </div>
+                            <div class="setting-control">
+                                <div style="font-size:12px; color:#4488aa; margin-bottom:4px;"><span data-i18n="reactor.price">价格: </span><span id="reactor_layer_price_1">1 BP</span></div>
+                                <button id="reactor_layer_btn_1" onclick="buyReactorLayer(1)" style="border-color:#224466; color:#4488ff;"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="reactor_layer_0" class="settings-section" style="border-color:#006688; background:rgba(0,15,25,0.4); margin-top:8px;">
+                        <h3 style="color:#00ccff;">⚛️ <span data-i18n="reactor.layer1">层1 — 生产复制能量</span></h3>
+                        <div class="setting-row">
+                            <div>
+                                <div class="setting-desc"><span data-i18n="reactor.quantity">数量: </span><span id="reactor_layer_qty_0">0</span>　<span data-i18n="reactor.efficiency">效率: </span><span id="reactor_layer_eff_0">×1</span>　<span data-i18n="reactor.purchases">购买次数: </span><span id="reactor_layer_pc_0">0</span></div>
+                                <div class="setting-desc"><span data-i18n="reactor.produces">生产: </span><span data-i18n="reactor.energyProd">复制能量</span>　<span data-i18n="reactor.rate">速率: </span><span id="reactor_layer_rate_0">0/s</span></div>
+                            </div>
+                            <div class="setting-control">
+                                <div style="font-size:12px; color:#0088aa; margin-bottom:4px;"><span data-i18n="reactor.price">价格: </span><span id="reactor_layer_price_0">1 BP</span></div>
+                                <button id="reactor_layer_btn_0" onclick="buyReactorLayer(0)" style="border-color:#004466; color:#00ccff;"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 超越挑战子页 -->
+            <div class="sub-page" id="tc_challenges">
+                <h1 data-i18n="ch.title">🏆 超越挑战</h1>
+                <p style="color:#886600; font-size:13px; margin-bottom:12px;" data-i18n="ch.intro">在各种限制下完成超越。重启超越视为放弃，达到条件并超越视为完成。只更新最快记录，不影响游戏。</p>
+                <div id="challenge_active_status" style="text-align:center; padding:8px; margin-bottom:8px; color:#ffcc00; font-size:14px; font-weight:bold; display:none; background:rgba(40,30,0,0.5); border:1px solid #886600; border-radius:6px;"></div>
+                <div id="challenge_content">
+                    <div class="ach-card" id="challenge_card_0" style="border-color:#884400;">
+                        <div class="ach-header"><span class="ach-icon">🐌</span><span class="ach-name" data-i18n="ch.c1.name">挑战1</span></div>
+                        <div class="ach-desc"><strong data-i18n="ch.condition">条件: </strong><span data-i18n="ch.c1.desc">挑战1条件</span></div>
+                        <div class="ach-desc" style="color:#00aa66;"><strong data-i18n="ch.rewardLabel">奖励: </strong><span data-i18n="ch.c1.reward">挑战1奖励</span></div>
+                        <div class="ach-desc" style="font-size:12px;"><span data-i18n="ch.bestTime">最快记录: </span><span id="challenge_time_0">∞</span></div>
+                        <div class="ach-status" id="challenge_status_0">🔒 未完成</div>
+                        <button id="challenge_btn_0" style="margin-top:6px; padding:4px 12px; font-size:12px; border-color:#884400; color:#ffaa00;">开始</button>
+                    </div>
+                    <div class="ach-card" id="challenge_card_1" style="border-color:#884400;">
+                        <div class="ach-header"><span class="ach-icon">🚫</span><span class="ach-name" data-i18n="ch.c2.name">挑战2</span></div>
+                        <div class="ach-desc"><strong data-i18n="ch.condition">条件: </strong><span data-i18n="ch.c2.desc">挑战2条件</span></div>
+                        <div class="ach-desc" style="color:#00aa66;"><strong data-i18n="ch.rewardLabel">奖励: </strong><span data-i18n="ch.c2.reward">挑战2奖励</span></div>
+                        <div class="ach-desc" style="font-size:12px;"><span data-i18n="ch.bestTime">最快记录: </span><span id="challenge_time_1">∞</span></div>
+                        <div class="ach-status" id="challenge_status_1">🔒 未完成</div>
+                        <button id="challenge_btn_1" style="margin-top:6px; padding:4px 12px; font-size:12px; border-color:#884400; color:#ffaa00;">开始</button>
+                    </div>
+                    <div class="ach-card" id="challenge_card_2" style="border-color:#884400;">
+                        <div class="ach-header"><span class="ach-icon">💸</span><span class="ach-name" data-i18n="ch.c3.name">挑战3</span></div>
+                        <div class="ach-desc"><strong data-i18n="ch.condition">条件: </strong><span data-i18n="ch.c3.desc">挑战3条件</span></div>
+                        <div class="ach-desc" style="color:#00aa66;"><strong data-i18n="ch.rewardLabel">奖励: </strong><span data-i18n="ch.c3.reward">挑战3奖励</span></div>
+                        <div class="ach-desc" style="font-size:12px;"><span data-i18n="ch.bestTime">最快记录: </span><span id="challenge_time_2">∞</span></div>
+                        <div class="ach-status" id="challenge_status_2">🔒 未完成</div>
+                        <button id="challenge_btn_2" style="margin-top:6px; padding:4px 12px; font-size:12px; border-color:#884400; color:#ffaa00;">开始</button>
+                    </div>
+                    <div class="ach-card" id="challenge_card_3" style="border-color:#884400;">
+                        <div class="ach-header"><span class="ach-icon">⚡</span><span class="ach-name" data-i18n="ch.c4.name">挑战4</span></div>
+                        <div class="ach-desc"><strong data-i18n="ch.condition">条件: </strong><span data-i18n="ch.c4.desc">挑战4条件</span></div>
+                        <div class="ach-desc" style="color:#00aa66;"><strong data-i18n="ch.rewardLabel">奖励: </strong><span data-i18n="ch.c4.reward">挑战4奖励</span></div>
+                        <div class="ach-desc" style="font-size:12px;"><span data-i18n="ch.bestTime">最快记录: </span><span id="challenge_time_3">∞</span></div>
+                        <div class="ach-status" id="challenge_status_3">🔒 未完成</div>
+                        <button id="challenge_btn_3" style="margin-top:6px; padding:4px 12px; font-size:12px; border-color:#884400; color:#ffaa00;">开始</button>
+                    </div>
+                    <div class="ach-card" id="challenge_card_4" style="border-color:#884400;">
+                        <div class="ach-header"><span class="ach-icon">⏳</span><span class="ach-name" data-i18n="ch.c5.name">挑战5</span></div>
+                        <div class="ach-desc"><strong data-i18n="ch.condition">条件: </strong><span data-i18n="ch.c5.desc">挑战5条件</span></div>
+                        <div class="ach-desc" style="color:#00aa66;"><strong data-i18n="ch.rewardLabel">奖励: </strong><span data-i18n="ch.c5.reward">挑战5奖励</span></div>
+                        <div class="ach-desc" style="font-size:12px;"><span data-i18n="ch.bestTime">最快记录: </span><span id="challenge_time_4">∞</span></div>
+                        <div class="ach-status" id="challenge_status_4">🔒 未完成</div>
+                        <button id="challenge_btn_4" style="margin-top:6px; padding:4px 12px; font-size:12px; border-color:#884400; color:#ffaa00;">开始</button>
+                    </div>
+                    <div class="ach-card" id="challenge_card_5" style="border-color:#884400;">
+                        <div class="ach-header"><span class="ach-icon">📉</span><span class="ach-name" data-i18n="ch.c6.name">挑战6</span></div>
+                        <div class="ach-desc"><strong data-i18n="ch.condition">条件: </strong><span data-i18n="ch.c6.desc">挑战6条件</span></div>
+                        <div class="ach-desc" style="color:#00aa66;"><strong data-i18n="ch.rewardLabel">奖励: </strong><span data-i18n="ch.c6.reward">挑战6奖励</span></div>
+                        <div class="ach-desc" style="font-size:12px;"><span data-i18n="ch.bestTime">最快记录: </span><span id="challenge_time_5">∞</span></div>
+                        <div class="ach-status" id="challenge_status_5">🔒 未完成</div>
+                        <button id="challenge_btn_5" style="margin-top:6px; padding:4px 12px; font-size:12px; border-color:#884400; color:#ffaa00;">开始</button>
+                    </div>
+                </div>
+            </div>
+            </div>
+        <div class="sub-page" id="leap_quantum">
+            <!-- 未解锁 -->
+            <div id="quantum_lock" style="text-align:center; padding:60px 20px;">
+                <div style="font-size:48px; opacity:0.4; margin-bottom:16px;">⚛️</div>
+                <p style="color:#cc88ff; font-size:20px; font-weight:bold;" data-i18n="quantum.locked">量子领域尚未开启</p>
+                <p style="color:#8866aa; margin-top:12px; font-size:14px;" data-i18n="quantum.lockedDesc">超越点数 (BP) 达到 10000 后解锁量子重置</p>
+                <div style="margin-top:20px; padding:12px; border:1px solid #2a0044; border-radius:8px; background:rgba(15,0,25,0.5); max-width:400px; margin-left:auto; margin-right:auto;">
+                    <div style="color:#664488; font-size:12px;" data-i18n="quantum.unlockProgress">解锁进度</div>
+                    <div style="color:#cc88ff; font-size:18px; margin-top:4px;" id="quantum_unlock_status">BP 0.000e0 / 1.000e4 (0.000e0%)</div>
+                    <div style="margin-top:8px; height:6px; background:#0a0015; border-radius:3px; overflow:hidden;">
+                        <div id="quantum_progress_bar" style="height:100%; width:0%; background:linear-gradient(90deg, #6633aa, #cc88ff); border-radius:3px; transition:width 0.3s;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 已解锁 -->
+            <div id="quantum_content" style="display:none;">
+                <!-- 量子子导航 -->
+                <div class="quantum-nav">
+                    <button class="quantum-sub-btn active" onclick="switchQuantumTab('reset', this)" data-i18n="quantum.reset">⚛️ 量子重置</button>
+                    <button class="quantum-sub-btn" onclick="switchQuantumTab('milestones', this)" data-i18n="quantum.milestones">🏅 量子里程碑</button>
+                    <button class="quantum-sub-btn" onclick="switchQuantumTab('upgrades', this)" data-i18n="quantum.upgrades">⬆️ 量子升级</button>
+                    <button class="quantum-sub-btn" onclick="switchQuantumTab('elements', this)" data-i18n="quantum.elements">🔬 元素周期表</button>
+                    <button class="quantum-sub-btn" onclick="switchQuantumTab('break', this)" data-i18n="quantum.break">💥 打破量子</button>
+                </div>
+
+                <!-- 量子重置子页 -->
+                <div class="quantum-sub active" id="qpage_reset">
+                    <h1 style="color:#cc88ff;" data-i18n="quantum.reset">⚛️ 量子重置</h1>
+                    <p style="color:#8866aa; font-size:13px;" id="quantum_count">第 1.000e0 次量子重置</p>
+
+                    <div class="settings-section" style="border-color:#2a0044; background:rgba(15,0,25,0.4);">
+                        <h3 style="color:#cc88ff;" data-i18n="quantum.qp">💎 量子点 (QP)</h3>
+                        <div class="setting-row">
+                            <div class="setting-label" style="color:#aa66cc;" data-i18n="quantum.held">当前持有</div>
+                            <div style="color:#cc88ff; font-size:20px; font-weight:bold;" id="quantum_qp">0.000e0 QP</div>
+                        </div>
+                        <div class="setting-row">
+                            <div class="setting-label" style="color:#aa66cc;" data-i18n="quantum.gain">本次重置可获得</div>
+                            <div style="color:#ddaaff; font-size:16px;" id="quantum_gain">+ 0.000e0 QP</div>
+                        </div>
+                    </div>
+
+                    <div class="settings-section" style="border-color:#2a0044; background:rgba(15,0,25,0.3);">
+                        <h3 style="color:#cc88ff;" data-i18n="quantum.notes">📋 量子重置说明</h3>
+                        <p style="color:#9988bb; font-size:12px; line-height:1.8;">
+                            <span data-i18n="quantum.note1">量子重置将重置量子层级之前的<strong style="color:#cc88ff;">所有进度</strong>，包括：</span><br>
+                            <span data-i18n="quantum.note2">• 距离 / 速度 / 加速度 / 急动度 / 升级等级</span><br>
+                            <span data-i18n="quantum.note3">• 超越点数 (BP) / 超越升级 / 超越次数</span><br>
+                            <span data-i18n="quantum.note4">• 超越碎片 / 距离升级 / 超越里程碑</span><br>
+                            <span data-i18n="quantum.note5">• 自动化设置</span><br><br>
+                            <span data-i18n="quantum.note6">保留：量子点 (QP)、量子重置次数、量子里程碑、量子升级</span><br><br>
+                            <span data-i18n="quantum.note7">量子点获取公式：f(x) = (lg(BP/4))^4</span><br>
+                            <span data-i18n="quantum.note8">量子点效果：每持有 1 个量子点，速度升级价格 ×0.9999（累乘）</span><br>
+                            <span data-i18n="quantum.note9">重置条件：BP ≥ 10000</span>
+                        </p>
+                    </div>
+
+                    <div style="text-align:center; padding:20px;">
+                        <button id="quantum_reset_btn" onclick="quantumReset()" data-i18n="quantum.resetBtn"
+                            style="padding:14px 40px; font-size:16px; font-weight:bold;
+                            border:2px solid #8844cc; background:rgba(40,0,60,0.6); color:#cc88ff;
+                            border-radius:8px; cursor:pointer; transition:all 0.2s;">
+                            ⚛️ 量子重置
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 量子里程碑子页 -->
+                <div class="quantum-sub" id="qpage_milestones">
+                    <h1 style="color:#cc88ff;" data-i18n="quantum.milestones">🏅 量子里程碑</h1>
+                    <p style="color:#8866aa; font-size:13px;"><span data-i18n="trans.ms.counter">已解锁: </span><span id="quantum_milestone_counter">0.000e0/8.000e0</span></p>
+                    <div style="margin-top:12px;">
+                        <div class="qms-card" id="qms_0">
+                            <div class="ach-header"><span class="ach-icon">⚛️</span><span class="ach-name" style="color:#cc88ff;"><span data-i18n="quantum.qms1.name">初次量子</span> (1<span data-i18n="quantum.count">次量子重置</span>)</span></div>
+                            <div class="ach-desc" style="color:#9988bb; font-size:12px;"><span data-i18n="quantum.qms1.reward">每次量子/超越重置自动获得 U1-1, U1-2 和 3个额外不计入购买数量的 U2-1；量子重置以10次超越次数和50BP开始</span></div>
+                            <div class="ach-status">🔒 未解锁</div>
+                        </div>
+                        <div class="qms-card" id="qms_1">
+                            <div class="ach-header"><span class="ach-icon">🔮</span><span class="ach-name" style="color:#cc88ff;"><span data-i18n="quantum.qms2.name">量子觉醒</span> (2<span data-i18n="quantum.count">次量子重置</span>)</span></div>
+                            <div class="ach-desc" style="color:#9988bb; font-size:12px;" data-i18n="quantum.qms2.reward">解锁量子升级</div>
+                            <div class="ach-status">🔒 未解锁</div>
+                        </div>
+                        <div class="qms-card" id="qms_2">
+                            <div class="ach-header"><span class="ach-icon">🎁</span><span class="ach-name" style="color:#cc88ff;"><span data-i18n="quantum.qms3.name">免费午餐</span> (4<span data-i18n="quantum.count">次量子重置</span>)</span></div>
+                            <div class="ach-desc" style="color:#9988bb; font-size:12px;"><span data-i18n="quantum.qms3.reward">购买速度/加速度/急动度升级时，只检测是否满足购买条件，不再扣除距离</span></div>
+                            <div class="ach-status">🔒 未解锁</div>
+                        </div>
+                        <div class="qms-card" id="qms_3">
+                            <div class="ach-header"><span class="ach-icon">📡</span><span class="ach-name" style="color:#cc88ff;"><span data-i18n="quantum.qms4.name">量子共鸣</span> (7<span data-i18n="quantum.count">次量子重置</span>)</span></div>
+                            <div class="ach-desc" style="color:#9988bb; font-size:12px;" data-i18n="quantum.qms4.reward">量子点数获取量 ×2</div>
+                            <div class="ach-status">🔒 未解锁</div>
+                        </div>
+                        <div class="qms-card" id="qms_4">
+                            <div class="ach-header"><span class="ach-icon">💫</span><span class="ach-name" style="color:#cc88ff;"><span data-i18n="quantum.qms5.name">Snap冲击波</span> (12<span data-i18n="quantum.count">次量子重置</span>)</span></div>
+                            <div class="ach-desc" style="color:#9988bb; font-size:12px;"><span data-i18n="quantum.qms5.reward">解锁 Snap 冲击波层级（生产急动度）</span>，数量实时等于 √当前量子超越次数</div>
+                            <div class="ach-status">🔒 未解锁</div>
+                        </div>
+                        <div class="qms-card" id="qms_5">
+                            <div class="ach-header"><span class="ach-icon">⚡</span><span class="ach-name" style="color:#cc88ff;"><span data-i18n="quantum.qms6.name">量子加速</span> (20<span data-i18n="quantum.count">次量子重置</span>)</span></div>
+                            <div class="ach-desc" style="color:#9988bb; font-size:12px;"><span data-i18n="quantum.qms6.reward">每个量子点为速度提供 0.05 倍加乘数</span> <span id="qm6_eff" style="color:#cc88ff;">未激活</span></div>
+                            <div class="ach-status">🔒 未解锁</div>
+                        </div>
+                        <div class="qms-card" id="qms_6">
+                            <div class="ach-header"><span class="ach-icon">🔬</span><span class="ach-name" style="color:#cc88ff;"><span data-i18n="quantum.qms7.name">元素之始</span> (35<span data-i18n="quantum.count">次量子重置</span>)</span></div>
+                            <div class="ach-desc" style="color:#9988bb; font-size:12px;" data-i18n="quantum.qms7.reward">解锁元素周期表</div>
+                            <div class="ach-status">🔒 未解锁</div>
+                        </div>
+                        <div class="qms-card" id="qms_7">
+                            <div class="ach-header"><span class="ach-icon">🌟</span><span class="ach-name" style="color:#cc88ff;"><span data-i18n="quantum.qms8.name">量子飞跃</span> (10<span data-i18n="quantum.count">次量子重置</span>)</span></div>
+                            <div class="ach-desc" style="color:#9988bb; font-size:12px;" data-i18n="quantum.qms8.reward">量子点获取量 ^1.5，超越点获取量 ^1.2</div>
+                            <div class="ach-status">🔒 未解锁</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 量子升级子页 -->
+                <div class="quantum-sub" id="qpage_upgrades">
+                    <h1 style="color:#cc88ff;" data-i18n="quantum.upgrades">⬆️ 量子升级</h1>
+
+                    <!-- 未解锁 -->
+                    <div id="quantum_upgrade_lock" style="text-align:center; padding:40px;">
+                        <div style="font-size:36px; opacity:0.4; margin-bottom:12px;">🔒</div>
+                        <p style="color:#8866aa; font-size:14px;" data-i18n="quantum.upgLocked">需要量子里程碑「量子觉醒」(2次量子重置) 解锁</p>
+                    </div>
+
+                    <!-- 已解锁 -->
+                    <div id="quantum_upgrade_content" style="display:none;">
+                        <div class="ach-card" style="border-color:#8844cc; background:rgba(20,5,35,0.5);">
+                            <div class="ach-header">
+                                <span class="ach-icon">🌌</span>
+                                <span class="ach-name" style="color:#cc88ff;" data-i18n="quantum.upgrade6.title">升级6 — 相对论推迟</span>
+                            </div>
+                            <div class="ach-desc" style="color:#9988bb; font-size:12px;">
+                                <span data-i18n="quantum.upgrade6.desc1">相对论影响的开始速度推迟10%（累乘）</span><br>
+                                <span data-i18n="quantum.upgrade6.desc2">初始价格 1 QP，每次购买价格 ×2</span><br>
+                                <span data-i18n="quantum.upgrade6.desc3">购买超过15个后，之后的购买效果折算至原来的15%</span><br>
+                                <span data-i18n="quantum.upgrade6.desc4">超过50个后，购买折算为原来的 1/(25+购买数量)</span>
+                            </div>
+                            <div id="upgrade6_eff" style="font-size:11px;color:#cc88ff;margin:4px 0;">相对论开始速度推迟 ×1.000e0</div>
+                            <span id="upgrade6_level" style="font-size:11px;color:#aa66cc;">Lv0.000e0</span>
+                            <div style="display:flex; gap:4px; margin-top:4px;">
+                                <button id="upgrade6_btn" onclick="buyUpgrade6()"
+                                    style="padding:6px 16px;border:1px solid #8844cc;background:rgba(40,0,60,0.6);color:#cc88ff;border-radius:4px;cursor:pointer;">
+                                    购买 — 1.000e0 QP
+                                </button>
+                                <button id="upgrade6_max_btn" onclick="buyMaxUpgrade6()"
+                                    style="padding:6px 12px;border:1px solid #8844cc;background:rgba(40,0,60,0.6);color:#cc88ff;border-radius:4px;cursor:pointer;font-size:12px;">
+                                    <span data-i18n="quantum.upgrade6.maxBtn">最大 ×</span><span id="u6_max_count">0.000e0</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- 升级7 -->
+                        <div class="ach-card" style="border-color:#8844cc; background:rgba(20,5,35,0.5); margin-top:8px;">
+                            <div class="ach-header">
+                                <span class="ach-icon">💎</span>
+                                <span class="ach-name" style="color:#cc88ff;" data-i18n="quantum.upgrade7.title">升级7 — 量子点倍增</span>
+                            </div>
+                            <div class="ach-desc" style="color:#9988bb; font-size:12px;">
+                                <span data-i18n="quantum.upgrade7.desc1">每次购买量子点获取量 ×2（乘数）</span><br>
+                                <span data-i18n="quantum.upgrade7.desc2">初始价格 10 QP，每次购买价格 ×5</span><br>
+                                <span data-i18n="quantum.upgrade7.desc3">最多购买 1000 次</span>
+                            </div>
+                            <div id="upgrade7_eff" style="font-size:11px;color:#cc88ff;margin:4px 0;" data-i18n="quantum.upgrade7.eff">量子点获取倍率 ×</div>
+                            <span id="upgrade7_level" style="font-size:11px;color:#aa66cc;">Lv0.000e0/1.000e3</span>
+                            <div style="display:flex; gap:4px; margin-top:4px;">
+                                <button id="upgrade7_btn" onclick="buyUpgrade7()"
+                                    style="padding:6px 16px;border:1px solid #8844cc;background:rgba(40,0,60,0.6);color:#cc88ff;border-radius:4px;cursor:pointer;">
+                                    购买 — 1.000e1 QP
+                                </button>
+                                <button id="upgrade7_max_btn" onclick="buyMaxUpgrade7()"
+                                    style="padding:6px 12px;border:1px solid #8844cc;background:rgba(40,0,60,0.6);color:#cc88ff;border-radius:4px;cursor:pointer;font-size:12px;">
+                                    <span data-i18n="quantum.upgrade7.maxBtn">最大 ×</span><span id="u7_max_count">0.000e0</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 元素周期表子页 -->
+                <div class="quantum-sub" id="qpage_elements">
+                    <h1 style="color:#cc88ff;" data-i18n="elements.title">🔬 元素周期表</h1>
+
+                    <!-- 未解锁 -->
+                    <div id="element_lock" style="text-align:center; padding:60px 20px;">
+                        <div style="font-size:48px; opacity:0.3; margin-bottom:16px;">🔒</div>
+                        <p style="color:#664488; font-size:20px; font-weight:bold;" data-i18n="elements.locked">元素周期表尚未开启</p>
+                        <p style="color:#8866aa; margin-top:12px; font-size:14px;" data-i18n="elements.lockedDesc">需要量子里程碑「元素之始」(35次量子重置) 解锁</p>
+                    </div>
+
+                    <!-- 已解锁 -->
+                    <div id="element_content" style="display:none;">
+                        <p style="color:#8866aa; font-size:13px; margin-bottom:8px;"><span data-i18n="elements.counter">使用量子点购买元素，解锁强力效果。当前已购买 </span><span id="elem_counter" style="color:#cc88ff; font-weight:bold;">0.000e0</span><span data-i18n="elements.counterEnd"> 个元素</span></p>
+                        <p style="color:#664488; font-size:12px; margin-bottom:12px;" data-i18n="elements.rules">📌 规则：购买过的元素显示为<span style="color:#aa44ff;font-weight:bold;">实心紫色</span>，未购买的为<span style="color:#664488;font-weight:bold;">空心紫色</span>。只有当前行全部买完才能解锁下一行。</p>
+                        <!-- 列状态提示 -->
+                        <div id="col_status" style="margin-bottom:10px;"></div>
+                        <!-- 元素详情面板（点击元素后显示） -->
+                        <div id="elem_detail" style="margin-bottom:16px;">
+                            <div style="text-align:center; padding:20px; color:#553366; font-size:13px; border:1px dashed #443366; border-radius:6px; background:rgba(20,5,35,0.3);" data-i18n="elements.clickHint">
+                                👆 点击下方周期表中的元素查看详情
+                            </div>
+                        </div>
+                        <div id="element_grid"></div>
+                    </div>
+                </div>
+
+                <!-- 打破量子子页 -->
+                <div class="quantum-sub" id="qpage_break">
+                    <h1 style="color:#cc88ff;" data-i18n="quantum.break">💥 打破量子</h1>
+                    <div style="text-align:center; padding:60px 20px;">
+                        <div style="font-size:48px; opacity:0.3; margin-bottom:16px;">💥</div>
+                        <p style="color:#664488; font-size:16px;" data-i18n="elements.breakDev">此板块正在开发中...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 自动化页 ========== -->
+    <div class="tab-page" id="tab_automation">
+        <h1 data-i18n="auto.title">🤖 自动化</h1>
+
+        <!-- 自动购买升级1 -->
+        <div class="auto-control" id="auto_v_control">
+            <div class="auto-header">
+                <div>
+                    <div class="auto-name" data-i18n="auto.speed">🚀 自动购买速度</div>
+                    <div class="auto-interval" id="auto_v_interval">间隔: 1.000e3ms</div>
+                </div>
+                <div class="auto-toggle">
+                    <label><input type="checkbox" id="auto_v_enabled" onchange="toggleAuto('v')"> <span data-i18n="auto.enabled">开启</span></label>
+                </div>
+            </div>
+            <div class="auto-row">
+                <button id="auto_v_buy" onclick="buyAutoLevel('v')">
+                    <span data-i18n="auto.accelBtn">加速 (价格: </span><span id="auto_v_price">1.000e0</span><span data-i18n="auto.accelBtnBP"> BP)</span>
+                </button>
+                <span style="font-size:11px; color:#008855;"><span data-i18n="auto.bought">已购买 </span><span id="auto_v_level">0.000e0</span><span data-i18n="auto.boughtTimes"> 次</span></span>
+            </div>
+        </div>
+
+        <!-- 自动购买升级2 -->
+        <div class="auto-control" id="auto_a_control">
+            <div class="auto-header">
+                <div>
+                    <div class="auto-name" data-i18n="auto.accel">⚡ 自动购买加速度</div>
+                    <div class="auto-interval" id="auto_a_interval">间隔: 1.000e3ms</div>
+                </div>
+                <div class="auto-toggle">
+                    <label><input type="checkbox" id="auto_a_enabled" onchange="toggleAuto('a')"> <span data-i18n="auto.enabled">开启</span></label>
+                </div>
+            </div>
+            <div class="auto-row">
+                <button id="auto_a_buy" onclick="buyAutoLevel('a')">
+                    <span data-i18n="auto.accelBtn">加速 (价格: </span><span id="auto_a_price">1.000e1</span><span data-i18n="auto.accelBtnBP"> BP)</span>
+                </button>
+                <span style="font-size:11px; color:#008855;"><span data-i18n="auto.bought">已购买 </span><span id="auto_a_level">0.000e0</span><span data-i18n="auto.boughtTimes"> 次</span></span>
+            </div>
+        </div>
+
+        <!-- 自动购买升级3 -->
+        <div class="auto-control" id="auto_j_control">
+            <div class="auto-header">
+                <div>
+                    <div class="auto-name" data-i18n="auto.jerk">🧩 自动购买急动度</div>
+                    <div class="auto-interval" id="auto_j_interval">间隔: 1.000e3ms</div>
+                </div>
+                <div class="auto-toggle">
+                    <label><input type="checkbox" id="auto_j_enabled" onchange="toggleAuto('j')"> <span data-i18n="auto.enabled">开启</span></label>
+                </div>
+            </div>
+            <div class="auto-row">
+                <button id="auto_j_buy" onclick="buyAutoLevel('j')">
+                    <span data-i18n="auto.accelBtn">加速 (价格: </span><span id="auto_j_price">2.500e1</span><span data-i18n="auto.accelBtnBP"> BP)</span>
+                </button>
+                <span style="font-size:11px; color:#008855;"><span data-i18n="auto.bought">已购买 </span><span id="auto_j_level">0.000e0</span><span data-i18n="auto.boughtTimes"> 次</span></span>
+            </div>
+        </div>
+
+        <!-- 自动超越 -->
+        <div class="auto-control" id="auto_transcend_control" style="border-color:#aa5500; background:rgba(30,15,0,0.4);">
+            <div class="auto-header">
+                <div>
+                    <div class="auto-name" style="color:#ffaa00;" data-i18n="auto.transcend">🌌 自动超越重置</div>
+                    <div class="auto-interval" style="color:#aa8800;" data-i18n="auto.transcendDesc">满足任一选中条件时自动执行</div>
+                </div>
+                <div class="auto-toggle">
+                    <label><input type="checkbox" id="auto_transcend_enabled" onchange="toggleAuto('transcend')"> <span data-i18n="auto.enabled">开启</span></label>
+                </div>
+            </div>
+
+            <div class="settings-section" style="margin-top:10px; border-color:#554400;">
+                <div class="setting-row">
+                    <div class="setting-label" style="color:#ffcc00;"><span data-i18n="auto.cond1">条件1: 每隔 </span>N<span data-i18n="auto.cond1Suffix"> 秒</span></div>
+                    <div class="setting-control">
+                        <input type="checkbox" id="auto_tc_cond_interval" onchange="updateAutoTranscend()">
+                        <input type="number" id="auto_tc_interval_val" value="60" min="1" style="width:60px; background:#001a0d; color:#00ff88; border:1px solid #007744; padding:4px; font-family:inherit;">
+                        <span style="font-size:12px;" data-i18n="auto.cond1Suffix">秒</span>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label" style="color:#ffcc00;" data-i18n="auto.cond2">条件2: 获得 BP ≥</div>
+                    <div class="setting-control">
+                        <input type="checkbox" id="auto_tc_cond_bpamount" onchange="updateAutoTranscend()">
+                        <input type="text" id="auto_tc_bpamount_val" value="1" style="width:80px; background:#001a0d; color:#00ff88; border:1px solid #007744; padding:4px; font-family:inherit;">
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label" style="color:#ffcc00;" data-i18n="auto.cond3">条件3: BP 是当前的</div>
+                    <div class="setting-control">
+                        <input type="checkbox" id="auto_tc_cond_bpmult" onchange="updateAutoTranscend()">
+                        <input type="number" id="auto_tc_bpmult_val" value="2" min="1" step="0.1" style="width:60px; background:#001a0d; color:#00ff88; border:1px solid #007744; padding:4px; font-family:inherit;">
+                        <span style="font-size:12px;" data-i18n="auto.cond3Suffix">倍</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 自动购买超越碎片（元素1解锁） -->
+        <div class="auto-control" id="auto_frag_control" style="display:none; border-color:#8844cc; background:rgba(20,5,35,0.4);">
+            <div class="auto-header">
+                <div>
+                    <div class="auto-name" style="color:#cc88ff;" data-i18n="auto.frag">💠 自动购买超越碎片</div>
+                    <div class="auto-interval" style="color:#8866aa;" data-i18n="auto.fragDesc">BP 足够时自动购买未持有的碎片</div>
+                </div>
+                <div class="auto-toggle">
+                    <label><input type="checkbox" id="auto_frag_enabled" onchange="toggleAuto('frag')"> <span data-i18n="auto.enabled">开启</span></label>
+                </div>
+            </div>
+        </div>
+
+        <!-- 自动购买距离升级（元素4解锁） -->
+        <div class="auto-control" id="auto_dist_upgrade_control" style="display:none; border-color:#4488cc; background:rgba(5,20,40,0.4);">
+            <div class="auto-header">
+                <div>
+                    <div class="auto-name" style="color:#88ccff;" data-i18n="auto.distUpgrade">📏 自动购买距离升级</div>
+                    <div class="auto-interval" style="color:#6688aa;" data-i18n="auto.distUpgradeDesc">自动购买U1和U2距离升级</div>
+                </div>
+                <div class="auto-toggle">
+                    <label><input type="checkbox" id="auto_dist_upgrade_enabled" onchange="toggleAuto('distUpgrade')"> <span data-i18n="auto.enabled">开启</span></label>
+                </div>
+            </div>
+        </div>
+
+        <!-- 自动购买超越升级（元素4解锁） -->
+        <div class="auto-control" id="auto_transcend_upgrade_control" style="display:none; border-color:#4488cc; background:rgba(5,20,40,0.4);">
+            <div class="auto-header">
+                <div>
+                    <div class="auto-name" style="color:#88ccff;" data-i18n="auto.transUpgrade">⬆️ 自动购买超越升级</div>
+                    <div class="auto-interval" style="color:#6688aa;" data-i18n="auto.transUpgradeDesc">自动购买升级4和升级5</div>
+                </div>
+                <div class="auto-toggle">
+                    <label><input type="checkbox" id="auto_transcend_upgrade_enabled" onchange="toggleAuto('transcendUpgrade')"> <span data-i18n="auto.enabled">开启</span></label>
+                </div>
+            </div>
+        </div>
+
+        <!-- 自动量子重置（元素7解锁） -->
+        <div class="auto-control" id="auto_quantum_control" style="display:none; border-color:#aa44cc; background:rgba(30,5,40,0.4);">
+            <div class="auto-header">
+                <div>
+                    <div class="auto-name" style="color:#cc88ff;" data-i18n="auto.quantum">⚛️ 自动量子重置</div>
+                    <div class="auto-interval" style="color:#8866aa;" data-i18n="auto.quantumDesc">满足条件时自动执行量子重置</div>
+                </div>
+                <div class="auto-toggle">
+                    <label><input type="checkbox" id="auto_quantum_enabled" onchange="toggleAuto('quantum')"> <span data-i18n="auto.enabled">开启</span></label>
+                </div>
+            </div>
+            <div class="settings-section" style="margin-top:10px; border-color:#553366;">
+                <div class="setting-row">
+                    <div class="setting-label" style="color:#cc88ff;" data-i18n="auto.quantumCond">条件: BP ≥</div>
+                    <div class="setting-control">
+                        <input type="checkbox" id="auto_q_cond_bpamount" onchange="updateAutoQuantum()">
+                        <input type="text" id="auto_q_bpamount_val" value="10000" style="width:80px; background:#001a0d; color:#00ff88; border:1px solid #007744; padding:4px; font-family:inherit;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 自动化购买模式设置 -->
+        <div class="auto-control" style="border-color:#888888; background:rgba(20,20,20,0.4);">
+            <div class="auto-header">
+                <div>
+                    <div class="auto-name" style="color:#aaaaaa;" data-i18n="auto.settings">⚙️ 自动化设置</div>
+                    <div class="auto-interval" style="color:#888888;" data-i18n="auto.buyMode">购买模式选择</div>
+                </div>
+            </div>
+            <div class="setting-row">
+                <div class="setting-label" style="color:#aaaaaa;" data-i18n="auto.buyModeLabel">购买模式</div>
+                <div class="setting-control">
+                    <label><input type="radio" name="auto_buy_mode" value="1" checked onchange="setAutoBuyMode(1)"> <span data-i18n="auto.mode1">每次1级</span></label>
+                    <label style="margin-left:15px;"><input type="radio" name="auto_buy_mode" value="0" onchange="setAutoBuyMode(0)"> <span data-i18n="auto.modeMax">最大购买</span></label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 成就页 ========== -->
+    <div class="tab-page" id="tab_achievements">
+        <h1 data-i18n="ach.title">🏆 成就</h1>
+        <div class="ach-summary"><span data-i18n="ach.counter">已解锁 </span><span id="ach_counter">0.000e0/1.700e1</span></div>
+        <div class="ach-grid">
+            <div class="ach-card" id="ach_a1">
+                <div class="ach-header"><span class="ach-icon">🎮</span><span class="ach-name" data-i18n="ach.a1.name">开始了</span></div>
+                <div class="ach-desc" data-i18n="ach.a1.desc">购买任何一个升级</div>
+                <div class="ach-status" data-i18n="ach.locked">🔒 未解锁</div>
+            </div>
+            <div class="ach-card" id="ach_a2">
+                <div class="ach-header"><span class="ach-icon">💨</span><span class="ach-name" data-i18n="ach.a2.name">加速加速</span></div>
+                <div class="ach-desc" data-i18n="ach.a2.desc">速度达到 20 m/s</div>
+                <div class="ach-status" data-i18n="ach.locked">🔒 未解锁</div>
+            </div>
+            <div class="ach-card" id="ach_a3">
+                <div class="ach-header"><span class="ach-icon">🚶</span><span class="ach-name" data-i18n="ach.a3.name">更进一步</span></div>
+                <div class="ach-desc" data-i18n="ach.a3.desc">距离达到 1e6 米</div>
+                <div class="ach-status" data-i18n="ach.locked">🔒 未解锁</div>
+            </div>
+            <div class="ach-card" id="ach_a4">
+                <div class="ach-header"><span class="ach-icon">🌙</span><span class="ach-name" data-i18n="ach.a4.name">登月计划完成</span></div>
+                <div class="ach-desc" data-i18n="ach.a4.desc">距离达到 4e8 米</div>
+                <div class="ach-status" data-i18n="ach.locked">🔒 未解锁</div>
+            </div>
+            <div class="ach-card" id="ach_a5">
+                <div class="ach-header"><span class="ach-icon">🤔</span><span class="ach-name" data-i18n="ach.a5.name">这是在干什么</span></div>
+                <div class="ach-desc" data-i18n="ach.a5.desc">速度达到 3e7</div>
+                <div class="ach-status" data-i18n="ach.locked">🔒 未解锁</div>
+            </div>
+            <div class="ach-card" id="ach_a6">
+                <div class="ach-header"><span class="ach-icon">✨</span><span class="ach-name" data-i18n="ach.a6.name">不可能</span></div>
+                <div class="ach-desc" data-i18n="ach.a6.desc">速度达到 3e8（光速）</div>
+                <div class="ach-status" data-i18n="ach.locked">🔒 未解锁</div>
+            </div>
+            <div class="ach-card" id="ach_a7">
+                <div class="ach-header"><span class="ach-icon">💥</span><span class="ach-name" data-i18n="ach.a7.name">崩溃</span></div>
+                <div class="ach-desc" data-i18n="ach.a7.desc">超越点数达到 10</div>
+                <div class="ach-status" data-i18n="ach.locked">🔒 未解锁</div>
+            </div>
+            <div class="ach-card" id="ach_a8">
+                <div class="ach-header"><span class="ach-icon">🔭</span><span class="ach-name" data-i18n="ach.a8.name">This Far</span></div>
+                <div class="ach-desc" data-i18n="ach.a8.desc">距离达到 1e12</div>
+                <div class="ach-status" data-i18n="ach.locked">🔒 未解锁</div>
+            </div>
+            <div class="ach-card" id="ach_a9">
+                <div class="ach-header"><span class="ach-icon">🧩</span><span class="ach-name" data-i18n="ach.a9.name">全集齐</span></div>
+                <div class="ach-desc" data-i18n="ach.a9.desc">所有距离升级均购买过 1 次</div>
+                <div class="ach-status" data-i18n="ach.locked">🔒 未解锁</div>
+            </div>
+            <div class="ach-card" id="ach_a18">
+                <div class="ach-header"><span class="ach-icon">🎯</span><span class="ach-name" data-i18n="ach.a18.name">有挑战性</span></div>
+                <div class="ach-desc" data-i18n="ach.a18.desc">完成任一超越挑战</div>
+                <div class="ach-status" data-i18n="ach.locked">🔒 未解锁</div>
+            </div>
+            <div class="ach-card" id="ach_a10">
+                <div class="ach-header"><span class="ach-icon">🧸</span><span class="ach-name" data-i18n="ach.a10.name">拼图</span></div>
+                <div class="ach-desc" data-i18n="ach.a10.desc">购买全部 5 个超越碎片</div>
+                <div class="ach-status" data-i18n="ach.locked">🔒 未解锁</div>
+            </div>
+            <div class="ach-card" id="ach_a11">
+                <div class="ach-header"><span class="ach-icon">🛤️</span><span class="ach-name" data-i18n="ach.a11.name">漫长的一英里</span></div>
+                <div class="ach-desc" data-i18n="ach.a11.desc">获取所有超越里程碑</div>
+                <div class="ach-status" data-i18n="ach.locked">🔒 未解锁</div>
+            </div>
+            <div class="ach-card" id="ach_a19">
+                <div class="ach-header"><span class="ach-icon">🗺️</span><span class="ach-name" data-i18n="ach.a19.name">更漫长的一英里</span></div>
+                <div class="ach-desc" data-i18n="ach.a19.desc">完成所有超越挑战</div>
+                <div class="ach-status" data-i18n="ach.locked">🔒 未解锁</div>
+            </div>
+            <div class="ach-card" id="ach_a12">
+                <div class="ach-header"><span class="ach-icon">💰</span><span class="ach-name" data-i18n="ach.a12.name">这么多</span></div>
+                <div class="ach-desc" data-i18n="ach.a12.desc">获得 5000 BP</div>
+                <div class="ach-status" data-i18n="ach.locked">🔒 未解锁</div>
+            </div>
+            <div class="ach-card" id="ach_a20">
+                <div class="ach-header"><span class="ach-icon">⚡</span><span class="ach-name" data-i18n="ach.a20.name">快快</span></div>
+                <div class="ach-desc" data-i18n="ach.a20.desc">6个挑战完成时间总和小于300秒</div>
+                <div class="ach-status" data-i18n="ach.locked">🔒 未解锁</div>
+            </div>
+            <div class="ach-card" id="ach_a13">
+                <div class="ach-header"><span class="ach-icon">⚛️</span><span class="ach-name" data-i18n="ach.a13.name">新的开始？</span></div>
+                <div class="ach-desc" data-i18n="ach.a13.desc">运行量子重置</div>
+                <div class="ach-status" data-i18n="ach.locked">🔒 未解锁</div>
+            </div>
+            <div class="ach-card" id="ach_a14">
+                <div class="ach-header"><span class="ach-icon">🏅</span><span class="ach-name" data-i18n="ach.a14.name">这是什么</span></div>
+                <div class="ach-desc" data-i18n="ach.a14.desc">获得 3 个量子里程碑</div>
+                <div class="ach-status" data-i18n="ach.locked">🔒 未解锁</div>
+            </div>
+            <div class="ach-card" id="ach_a15">
+                <div class="ach-header"><span class="ach-icon">💫</span><span class="ach-name" data-i18n="ach.a15.name">速度超越</span></div>
+                <div class="ach-desc" data-i18n="ach.a15.desc">Snap 值达到 2</div>
+                <div class="ach-status" data-i18n="ach.locked">🔒 未解锁</div>
+            </div>
+            <div class="ach-card" id="ach_a16">
+                <div class="ach-header"><span class="ach-icon">⬆️</span><span class="ach-name" data-i18n="ach.a16.name">渐入佳境</span></div>
+                <div class="ach-desc" data-i18n="ach.a16.desc">购买 5 个升级6等级</div>
+                <div class="ach-status" data-i18n="ach.locked">🔒 未解锁</div>
+            </div>
+            <div class="ach-card" id="ach_a17">
+                <div class="ach-header"><span class="ach-icon">🔬</span><span class="ach-name" data-i18n="ach.a17.name">元素周期表？</span></div>
+                <div class="ach-desc" data-i18n="ach.a17.desc">解锁元素周期表</div>
+                <div class="ach-status" data-i18n="ach.locked">🔒 未解锁</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 统计页 ========== -->
+    <div class="tab-page" id="tab_stats">
+        <h1 data-i18n="stat.title">📊 统计</h1>
+
+        <div class="settings-section">
+            <h3 data-i18n="stat.basic">📈 基础统计</h3>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="stat.totalDist">总共生产的距离</div>
+                    <div class="setting-desc" data-i18n="stat.totalDistDesc">此项不会减少，只会增多</div>
+                </div>
+                <div class="setting-control">
+                    <span style="color:#00ff88; font-size:16px; font-weight:bold;" id="stat_total_distance">0.000e0</span>
+                </div>
+            </div>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="stat.gameTime">游戏总用时</div>
+                    <div class="setting-desc" data-i18n="stat.gameTimeDesc">累计在线游戏时间</div>
+                </div>
+                <div class="setting-control">
+                    <span style="color:#00ff88; font-size:16px; font-weight:bold;" id="stat_total_time">0秒</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section" id="stat_transcend_section" style="display:none;">
+            <h3 data-i18n="stat.trans">🌌 超越统计</h3>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="stat.transTime">本次超越已用时间</div>
+                </div>
+                <div class="setting-control">
+                    <span style="color:#88aaff; font-size:16px; font-weight:bold;" id="stat_transcend_current">—</span>
+                </div>
+            </div>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="stat.transMinTime">超越最少用时记录</div>
+                </div>
+                <div class="setting-control">
+                    <span style="color:#ffcc00; font-size:16px; font-weight:bold;" id="stat_transcend_min">—</span>
+                </div>
+            </div>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="stat.transCount">超越次数</div>
+                </div>
+                <div class="setting-control">
+                    <span style="color:#88aaff; font-size:16px; font-weight:bold;" id="stat_transcend_count">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section" id="stat_quantum_section" style="display:none;">
+            <h3 data-i18n="stat.quantum">⚛️ 量子统计</h3>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="stat.quantumTime">本次量子用时</div>
+                </div>
+                <div class="setting-control">
+                    <span style="color:#cc88ff; font-size:16px; font-weight:bold;" id="stat_quantum_current">—</span>
+                </div>
+            </div>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="stat.quantumMinTime">量子用时最少记录</div>
+                </div>
+                <div class="setting-control">
+                    <span style="color:#ffcc00; font-size:16px; font-weight:bold;" id="stat_quantum_min">—</span>
+                </div>
+            </div>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="stat.quantumCount">量子次数</div>
+                </div>
+                <div class="setting-control">
+                    <span style="color:#cc88ff; font-size:16px; font-weight:bold;" id="stat_quantum_count">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 离线流量页 ========== -->
+    <div class="tab-page" id="tab_flow">
+        <h1 data-i18n="flow.title">⚡ 离线流量</h1>
+
+        <div class="settings-section">
+            <h3 data-i18n="flow.storage">📦 存储流量</h3>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="flow.currentFlow">当前存储流量</div>
+                    <div class="setting-desc" data-i18n="flow.storageDesc">离线进度关闭时，离线时间按转换率转为存储流量</div>
+                </div>
+                <div class="setting-control">
+                    <span style="color:#00ff88; font-size:18px; font-weight:bold;" id="flow_stored">00:00:00</span>
+                    <span style="color:#666; font-size:12px;"> / </span>
+                    <span style="color:#88aaff; font-size:14px;" id="flow_limit">10:00:00</span>
+                    <span style="color:#666; font-size:12px; margin-left:8px;" id="flow_pct">0.0%</span>
+                </div>
+            </div>
+            <div style="width:100%; height:12px; background:rgba(0,30,15,0.6); border-radius:6px; border:1px solid #005533; overflow:hidden; margin:8px 0;">
+                <div id="flow_bar" style="height:100%; background:linear-gradient(90deg, #00aa55, #00ff88); width:0%; transition:width 0.3s ease;"></div>
+            </div>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="flow.offlineStatus">离线进度状态</div>
+                    <div class="setting-desc" id="flow_offline_status" style="color:#00ff88;">已启用（离线时模拟进度）</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h3 data-i18n="flow.multiplier">🚀 游戏倍速</h3>
+            <p style="color:#886644; font-size:12px; margin-bottom:10px;"><span data-i18n="flow.multiplierDesc">使用存储流量激活倍速。当前倍率: </span><span style="color:#00ff88; font-weight:bold;" id="flow_current_mult">1x</span></p>
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                <button id="flow_speed_1" class="flow-speed-btn active" onclick="setSpeedMultiplier(1)">1x<br><span style="font-size:10px; color:#666;" data-i18n="flow.free">免费</span></button>
+                <button id="flow_speed_2" class="flow-speed-btn" onclick="setSpeedMultiplier(2)">2x<br><span style="font-size:10px; color:#666;">1s/s</span></button>
+                <button id="flow_speed_3" class="flow-speed-btn" onclick="setSpeedMultiplier(3)">3x<br><span style="font-size:10px; color:#666;">2s/s</span></button>
+                <button id="flow_speed_5" class="flow-speed-btn" onclick="setSpeedMultiplier(5)">5x<br><span style="font-size:10px; color:#666;">4s/s</span></button>
+                <button id="flow_speed_10" class="flow-speed-btn" onclick="setSpeedMultiplier(10)">10x<br><span style="font-size:10px; color:#666;">9s/s</span></button>
+                <button id="flow_speed_30" class="flow-speed-btn" onclick="setSpeedMultiplier(30)">30x<br><span style="font-size:10px; color:#666;">29s/s</span></button>
+                <button id="flow_speed_60" class="flow-speed-btn" onclick="setSpeedMultiplier(60)">60x<br><span style="font-size:10px; color:#666;">59s/s</span></button>
+                <button id="flow_speed_180" class="flow-speed-btn" onclick="setSpeedMultiplier(180)">180x<br><span style="font-size:10px; color:#666;">179s/s</span></button>
+                <button id="flow_speed_600" class="flow-speed-btn" onclick="setSpeedMultiplier(600)">600x<br><span style="font-size:10px; color:#666;">599s/s</span></button>
+            </div>
+            <p style="color:#664444; font-size:11px; margin-top:8px;" data-i18n="flow.warning">⚠ 流量用尽时自动切换为1x，流量为0时除1x外按钮锁定。退出游戏时倍率自动切换为1x。</p>
+        </div>
+
+        <div class="settings-section">
+            <h3>🛒 升级购买</h3>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="flow.convRate">转换率</div>
+                    <div class="setting-desc"><span data-i18n="flow.convRateDesc">当前转换率: </span><span id="flow_conv_rate" style="color:#00ff88;">60%</span>。转换率超过100%时，即使在线或启用离线收益也能获得额外的溢出流量。</div>
+                </div>
+                <div class="setting-control">
+                    <button id="flow_conv_btn" onclick="buyConversionRate()"><span data-i18n="flow.upgrade">升级</span><br><span style="font-size:10px; color:#666;"><span data-i18n="flow.price">价格: </span><span id="flow_conv_cost">00:10:00</span></span></button>
+                </div>
+            </div>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="flow.storageLimit">存储上限</div>
+                    <div class="setting-desc" data-i18n="flow.storageLimitDesc">每次购买价格和存储上限均 ×2</div>
+                </div>
+                <div class="setting-control">
+                    <button id="flow_limit_btn" onclick="buyStorageLimit()"><span data-i18n="flow.upgrade">升级</span><br><span style="font-size:10px; color:#666;"><span data-i18n="flow.price">价格: </span><span id="flow_limit_cost">05:00:00</span></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 设置页 ========== -->
+    <div class="tab-page" id="tab_settings">
+        <h1 data-i18n="set.title">⚙️ 设置</h1>
+
+        <div class="settings-section">
+            <h3 data-i18n="set.display">📋 显示设置</h3>
+
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="set.lang">语言</div>
+                    <div class="setting-desc" data-i18n="set.langDesc">游戏语言选择（不影响存档）</div>
+                </div>
+                <div class="setting-control">
+                    <select id="language_selector" onchange="setLanguage(this.value)">
+                        <option value="en">English</option>
+                        <option value="zh-CN">中文(简体)</option>
+                        <option value="zh-TW">中文(繁體)</option>
+                        <option value="ru">Русский</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="set.sciPrecision">科学计数法位数保留</div>
+                    <div class="setting-desc" data-i18n="set.sciPrecisionDesc">控制小数点后保留位数（3-20位）</div>
+                </div>
+                <div class="setting-control">
+                    <input type="range" id="setting_sci_precision" min="3" max="20" value="3" step="1">
+                    <span style="font-size:12px; color:#00ff88; min-width:50px;" id="setting_sci_precision_label">3 位</span>
+                </div>
+            </div>
+
+            <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
+                <div>
+                    <div class="setting-label" data-i18n="set.customNotation">自定义计数法</div>
+                    <div class="setting-desc" data-i18n="set.customNotationDesc">输入至少10个不重复的字符，所有数字将按自定义显示。例如：abcdefghij</div>
+                </div>
+                <div style="width:100%; display:flex; gap:8px; align-items:center;">
+                    <input type="text" id="setting_custom_notation" placeholder="输入至少10个不重复字符..." data-i18n-ph="set.customNotationPlaceholder" style="flex:1; background:#001a0d; color:#00ff88; border:1px solid #007744; padding:6px 10px; font-family:inherit; font-size:13px; border-radius:4px;">
+                    <span style="font-size:12px; min-width:50px;" id="setting_custom_status">未启用</span>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="set.floatBar">悬浮状态栏</div>
+                    <div class="setting-desc" data-i18n="set.floatBarDesc">在页面底部显示实时数据</div>
+                </div>
+                <div class="setting-control">
+                    <input type="checkbox" id="setting_float_bar" checked>
+                    <span style="font-size:12px; color:#00aa66;" id="float_bar_status">已开启</span>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="set.scene">场景动画</div>
+                    <div class="setting-desc" data-i18n="set.sceneDesc">开启/关闭宇宙场景渲染</div>
+                </div>
+                <div class="setting-control">
+                    <input type="checkbox" id="setting_scene" checked>
+                    <span style="font-size:12px; color:#00aa66;" id="scene_status">已开启</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h3 data-i18n="set.confirm">🔔 确认开关</h3>
+
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="set.confirmTranscend">超越重置确认</div>
+                    <div class="setting-desc" data-i18n="set.confirmTranscendDesc">执行超越重置时弹出确认框</div>
+                </div>
+                <div class="setting-control">
+                    <input type="checkbox" id="setting_confirm_transcend" checked>
+                    <span style="font-size:12px; color:#00aa66;" id="confirm_transcend_status">已开启</span>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="set.confirmQuantum">量子重置确认</div>
+                    <div class="setting-desc" data-i18n="set.confirmQuantumDesc">执行量子重置时弹出确认框</div>
+                </div>
+                <div class="setting-control">
+                    <input type="checkbox" id="setting_confirm_quantum" checked>
+                    <span style="font-size:12px; color:#00aa66;" id="confirm_quantum_status">已开启</span>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="set.confirmReset">重置游戏确认</div>
+                    <div class="setting-desc" data-i18n="set.confirmResetDesc">重置游戏时弹出确认框</div>
+                </div>
+                <div class="setting-control">
+                    <input type="checkbox" id="setting_confirm_reset" checked>
+                    <span style="font-size:12px; color:#00aa66;" id="confirm_reset_status">已开启</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h3 data-i18n="set.offlineSave">⏱ 离线与保存设置</h3>
+
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="set.offlineProgress">离线进度</div>
+                    <div class="setting-desc" data-i18n="set.offlineProgressDesc">开启后离线时模拟游戏进度；关闭后离线时间转为存储流量</div>
+                </div>
+                <div class="setting-control">
+                    <input type="checkbox" id="setting_offline_progress" checked>
+                    <span style="font-size:12px; color:#00aa66;" id="setting_offline_progress_status">已开启</span>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="set.offlineTicks">离线Ticks存储上限</div>
+                    <div class="setting-desc" data-i18n="set.offlineTicksDesc">离线模拟的最大tick数（100 - 5,000,000）</div>
+                </div>
+                <div class="setting-control">
+                    <input type="range" id="setting_offline_ticks" min="100" max="5000000" value="100000" step="100">
+                    <span style="font-size:12px; color:#00ff88; min-width:80px;" id="setting_offline_ticks_label">1.000e5</span>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="set.autoSave">自动保存间隔</div>
+                    <div class="setting-desc" data-i18n="set.autoSaveDesc">滑块选择自动保存频率</div>
+                </div>
+                <div class="setting-control">
+                    <input type="range" id="setting_autosave_interval" min="0" max="6" value="0" step="1">
+                    <span style="font-size:12px; color:#00ff88; min-width:60px;" id="setting_autosave_interval_label">1 秒</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h3 data-i18n="set.gameOps">🎮 游戏操作</h3>
+
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="set.resetGame">重置游戏</div>
+                    <div class="setting-desc" data-i18n="set.resetGameDesc">清除所有进度，从头开始</div>
+                </div>
+                <div class="setting-control">
+                    <button onclick="resetGame()" data-i18n="set.resetBtn">🔄 重置</button>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="set.exportFile">导出存档文件</div>
+                    <div class="setting-desc" data-i18n="set.exportFileDesc">下载 base64 编码存档文件</div>
+                </div>
+                <div class="setting-control">
+                    <button onclick="exportSave()" data-i18n="set.exportFileBtn">📤 导出文件</button>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label" data-i18n="set.importFile">导入存档文件</div>
+                    <div class="setting-desc" data-i18n="set.importFileDesc">从 base64 编码文件恢复存档</div>
+                </div>
+                <div class="setting-control">
+                    <button onclick="importSave()" data-i18n="set.importFileBtn">📥 导入文件</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h3 data-i18n="set.saveCode">📝 存档代码</h3>
+
+            <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
+                <div>
+                    <div class="setting-label" data-i18n="set.exportCode">导出存档代码</div>
+                    <div class="setting-desc" data-i18n="set.exportCodeDesc">复制以下 base64 代码到剪贴板</div>
+                </div>
+                <div style="width:100%; display:flex; gap:8px;">
+                    <textarea id="save_code_output" readonly style="flex:1; height:60px; background:#001a0d; color:#00ff88; border:1px solid #007744; padding:8px; font-family:inherit; font-size:11px; resize:vertical;"></textarea>
+                    <button onclick="exportSaveCode()" data-i18n="set.exportCodeBtn">📋 生成代码</button>
+                </div>
+            </div>
+
+            <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
+                <div>
+                    <div class="setting-label" data-i18n="set.importCode">导入存档代码</div>
+                    <div class="setting-desc" data-i18n="set.importCodeDesc">粘贴 base64 存档代码后点击导入</div>
+                </div>
+                <div style="width:100%; display:flex; gap:8px;">
+                    <textarea id="save_code_input" placeholder="在此粘贴存档代码..." data-i18n-ph="set.importCodePlaceholder" style="flex:1; height:60px; background:#001a0d; color:#00ff88; border:1px solid #007744; padding:8px; font-family:inherit; font-size:11px; resize:vertical;"></textarea>
+                    <button onclick="importSaveCode()" data-i18n="set.importCodeBtn">📥 导入代码</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="save-section">
+            <h3 data-i18n="set.saveSlots">📦 存档槽位 (10个)</h3>
+            <div style="margin-bottom:10px;">
+                <button onclick="if(currentSlot!==null) saveGame(currentSlot)" data-i18n="set.manualSave" style="padding:8px 20px; font-size:14px; font-weight:bold; color:#00ff88; background:rgba(0,40,20,0.6); border:2px solid #00aa55; border-radius:6px; cursor:pointer;">💾 手动保存当前存档</button>
+                <span style="margin-left:12px; font-size:12px; color:#666;"><span data-i18n="set.currentSlot">当前槽位: </span><span id="current_slot_display" style="color:#00ff88; font-weight:bold;">—</span></span>
+            </div>
+            <div class="save-grid" id="save_grid">
+                <!-- 10个存档槽位由JS动态生成 -->
+            </div>
+        </div>
+
+        <!-- 开发者模式 -->
+        <div class="settings-section" style="border-color:#550055; background:rgba(20,0,20,0.5);">
+            <h3 data-i18n="set.devMode">🔧 开发者模式</h3>
+
+            <!-- 登录区 -->
+            <div id="dev_login_area">
+                <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
+                    <div>
+                        <div class="setting-label" data-i18n="set.devVerify">开发者验证</div>
+                        <div class="setting-desc" data-i18n="set.devVerifyDesc">输入密码以解锁开发者工具（密码哈希存储）</div>
+                    </div>
+                    <div style="width:100%; display:flex; gap:8px; flex-wrap:wrap;">
+                        <select id="dev_user_select" style="background:#1a0d1a; color:#cc88cc; border:1px solid #553355; padding:4px 8px; border-radius:4px;">
+                            <option value="roast">Roast</option>
+                            <option value="explorer">explorer</option>
+                        </select>
+                        <input type="password" id="dev_password_input" placeholder="输入密码..." data-i18n-ph="set.devPasswordPlaceholder" style="flex:1; min-width:120px; background:#1a0d1a; color:#cc88cc; border:1px solid #553355; padding:4px 8px; border-radius:4px; font-family:inherit;">
+                        <button onclick="devLogin()" data-i18n="set.devVerifyBtn">🔓 验证</button>
+                    </div>
+                    <div id="dev_login_msg" style="font-size:12px; color:#aa66aa; min-height:16px;"></div>
+                </div>
+            </div>
+
+            <!-- 开发者面板（验证后显示） -->
+            <div id="dev_panel" style="display:none;">
+                <div style="font-size:13px; color:#cc88cc; margin-bottom:12px;">
+                    <span data-i18n="set.devVerified">✅ 已验证为 </span><strong id="dev_user_name">—</strong>　<button onclick="devLogout()" style="font-size:11px; padding:2px 8px; border:1px solid #553355; background:rgba(40,0,40,0.5); color:#cc88cc; border-radius:3px; cursor:pointer;" data-i18n="set.devLogout">退出</button>
+                </div>
+
+                <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+                    <div class="setting-label" style="color:#cc88cc;" data-i18n="set.devFields.s">距离 (s)</div>
+                    <div style="display:flex; gap:6px; width:100%;">
+                        <input type="text" id="dev_s_input" placeholder="如 1e100" style="flex:1; background:#1a0d1a; color:#cc88cc; border:1px solid #553355; padding:4px 8px; border-radius:4px; font-family:inherit; font-size:12px;">
+                        <button onclick="devSetField('s')" data-i18n="set.devFields.set">设置</button>
+                    </div>
+                </div>
+
+                <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+                    <div class="setting-label" style="color:#cc88cc;" data-i18n="set.devFields.v">速度 (v)</div>
+                    <div style="display:flex; gap:6px; width:100%;">
+                        <input type="text" id="dev_v_input" placeholder="如 1e50" style="flex:1; background:#1a0d1a; color:#cc88cc; border:1px solid #553355; padding:4px 8px; border-radius:4px; font-family:inherit; font-size:12px;">
+                        <button onclick="devSetField('v')" data-i18n="set.devFields.set">设置</button>
+                    </div>
+                </div>
+
+                <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+                    <div class="setting-label" style="color:#cc88cc;" data-i18n="set.devFields.a">加速度 (a)</div>
+                    <div style="display:flex; gap:6px; width:100%;">
+                        <input type="text" id="dev_a_input" placeholder="如 1e10" style="flex:1; background:#1a0d1a; color:#cc88cc; border:1px solid #553355; padding:4px 8px; border-radius:4px; font-family:inherit; font-size:12px;">
+                        <button onclick="devSetField('a')" data-i18n="set.devFields.set">设置</button>
+                    </div>
+                </div>
+
+                <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+                    <div class="setting-label" style="color:#cc88cc;" data-i18n="set.devFields.j">急动度 (j)</div>
+                    <div style="display:flex; gap:6px; width:100%;">
+                        <input type="text" id="dev_j_input" placeholder="如 1e5" style="flex:1; background:#1a0d1a; color:#cc88cc; border:1px solid #553355; padding:4px 8px; border-radius:4px; font-family:inherit; font-size:12px;">
+                        <button onclick="devSetField('j')" data-i18n="set.devFields.set">设置</button>
+                    </div>
+                </div>
+
+                <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+                    <div class="setting-label" style="color:#cc88cc;" data-i18n="set.devFields.bp">超越点数 (BP)</div>
+                    <div style="display:flex; gap:6px; width:100%;">
+                        <input type="text" id="dev_bp_input" placeholder="如 1e6" style="flex:1; background:#1a0d1a; color:#cc88cc; border:1px solid #553355; padding:4px 8px; border-radius:4px; font-family:inherit; font-size:12px;">
+                        <button onclick="devSetField('bp')" data-i18n="set.devFields.set">设置</button>
+                    </div>
+                </div>
+
+                <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+                    <div class="setting-label" style="color:#cc88cc;" data-i18n="set.devFields.level">等级</div>
+                    <div style="display:flex; gap:6px; width:100%; flex-wrap:wrap;">
+                        <label style="font-size:11px; color:#aa66aa;" data-i18n="set.devFields.speedLv">速度 Lv</label>
+                        <input type="number" id="dev_vLevel_input" value="0" min="0" style="width:60px; background:#1a0d1a; color:#cc88cc; border:1px solid #553355; padding:4px; border-radius:4px; font-family:inherit; font-size:12px;">
+                        <label style="font-size:11px; color:#aa66aa;" data-i18n="set.devFields.accelLv">加速度 Lv</label>
+                        <input type="number" id="dev_aLevel_input" value="0" min="0" style="width:60px; background:#1a0d1a; color:#cc88cc; border:1px solid #553355; padding:4px; border-radius:4px; font-family:inherit; font-size:12px;">
+                        <label style="font-size:11px; color:#aa66aa;" data-i18n="set.devFields.jerkLv">急动度 Lv</label>
+                        <input type="number" id="dev_jLevel_input" value="0" min="0" style="width:60px; background:#1a0d1a; color:#cc88cc; border:1px solid #553355; padding:4px; border-radius:4px; font-family:inherit; font-size:12px;">
+                        <label style="font-size:11px; color:#aa66aa;" data-i18n="set.devFields.transLv">超越升级 Lv</label>
+                        <input type="number" id="dev_tpLevel_input" value="0" min="0" style="width:60px; background:#1a0d1a; color:#cc88cc; border:1px solid #553355; padding:4px; border-radius:4px; font-family:inherit; font-size:12px;">
+                        <button onclick="devSetLevels()" data-i18n="set.devFields.setLevel">设置等级</button>
+                    </div>
+                </div>
+
+                <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+                    <div class="setting-label" style="color:#cc88cc;" data-i18n="set.devFields.transCount">超越次数 / 距离升级</div>
+                    <div style="display:flex; gap:6px; width:100%; flex-wrap:wrap;">
+                        <label style="font-size:11px; color:#aa66aa;" data-i18n="set.devFields.transCountShort">超越次数</label>
+                        <input type="number" id="dev_tcCount_input" value="0" min="0" style="width:60px; background:#1a0d1a; color:#cc88cc; border:1px solid #553355; padding:4px; border-radius:4px; font-family:inherit; font-size:12px;">
+                        <label style="font-size:11px; color:#aa66aa;" data-i18n="set.devFields.u21">U2-1 级</label>
+                        <input type="number" id="dev_distU2_1_input" value="0" min="0" style="width:50px; background:#1a0d1a; color:#cc88cc; border:1px solid #553355; padding:4px; border-radius:4px; font-family:inherit; font-size:12px;">
+                        <label style="font-size:11px; color:#aa66aa;" data-i18n="set.devFields.u22">U2-2 级</label>
+                        <input type="number" id="dev_distU2_2_input" value="0" min="0" style="width:50px; background:#1a0d1a; color:#cc88cc; border:1px solid #553355; padding:4px; border-radius:4px; font-family:inherit; font-size:12px;">
+                        <button onclick="devSetMisc()" data-i18n="set.devFields.set">设置</button>
+                    </div>
+                </div>
+
+                <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+                    <div class="setting-label" style="color:#cc88cc;" data-i18n="set.devFields.frags">碎片 / 里程碑</div>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                        <label style="font-size:11px; color:#aa66aa;"><input type="checkbox" id="dev_frag1"> <span data-i18n="set.devFields.frag">碎片</span>1</label>
+                        <label style="font-size:11px; color:#aa66aa;"><input type="checkbox" id="dev_frag2"> <span data-i18n="set.devFields.frag">碎片</span>2</label>
+                        <label style="font-size:11px; color:#aa66aa;"><input type="checkbox" id="dev_frag3"> <span data-i18n="set.devFields.frag">碎片</span>3</label>
+                        <label style="font-size:11px; color:#aa66aa;"><input type="checkbox" id="dev_frag4"> <span data-i18n="set.devFields.frag">碎片</span>4</label>
+                        <label style="font-size:11px; color:#aa66aa;"><input type="checkbox" id="dev_frag5"> <span data-i18n="set.devFields.frag">碎片</span>5</label>
+                        <label style="font-size:11px; color:#aa66aa;"><input type="checkbox" id="dev_frag6"> <span data-i18n="set.devFields.frag">碎片</span>6</label>
+                        <label style="font-size:11px; color:#aa66aa;"><input type="checkbox" id="dev_distU1_1"> U1-1</label>
+                        <label style="font-size:11px; color:#aa66aa;"><input type="checkbox" id="dev_distU1_2"> U1-2</label>
+                        <label style="font-size:11px; color:#aa66aa;"><input type="checkbox" id="dev_distU1_3"> U1-3</label>
+                        <button onclick="devSetFlags()" data-i18n="set.devFields.apply">应用</button>
+                    </div>
+                </div>
+
+                <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+                    <div class="setting-label" style="color:#cc88cc;" data-i18n="set.devFields.quantumData">量子数据</div>
+                    <div style="display:flex; gap:6px; width:100%; flex-wrap:wrap; align-items:center;">
+                        <label style="font-size:11px; color:#aa66aa;" data-i18n="set.devFields.quantumPoints">量子点</label>
+                        <input type="text" id="dev_quantumPoints_input" placeholder="如 1e10" style="width:80px; background:#1a0d1a; color:#cc88cc; border:1px solid #553355; padding:4px; border-radius:4px; font-family:inherit; font-size:12px;">
+                        <label style="font-size:11px; color:#aa66aa;" data-i18n="set.devFields.quantumCount">量子次数</label>
+                        <input type="number" id="dev_quantumCount_input" value="0" min="0" style="width:50px; background:#1a0d1a; color:#cc88cc; border:1px solid #553355; padding:4px; border-radius:4px; font-family:inherit; font-size:12px;">
+                        <label style="font-size:11px; color:#aa66aa;" data-i18n="set.devFields.upgrade6Lv">升级6 Lv</label>
+                        <input type="number" id="dev_upgrade6Level_input" value="0" min="0" style="width:50px; background:#1a0d1a; color:#cc88cc; border:1px solid #553355; padding:4px; border-radius:4px; font-family:inherit; font-size:12px;">
+                        <label style="font-size:11px; color:#aa66aa;" data-i18n="set.devFields.upgrade7Lv">升级7 Lv</label>
+                        <input type="number" id="dev_upgrade7Level_input" value="0" min="0" max="1000" style="width:50px; background:#1a0d1a; color:#cc88cc; border:1px solid #553355; padding:4px; border-radius:4px; font-family:inherit; font-size:12px;">
+                        <button onclick="devSetQuantum()" data-i18n="set.devFields.set">设置</button>
+                    </div>
+                </div>
+
+                <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+                    <div class="setting-label" style="color:#cc88cc;" data-i18n="set.devFields.quickOps">快捷操作</div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button onclick="devUnlockAllMilestones()" style="border:1px solid #553355; background:rgba(40,0,40,0.5); color:#cc88cc; padding:4px 12px; border-radius:4px; cursor:pointer; font-size:12px;" data-i18n="set.devFields.unlockAllMs">解锁全部里程碑</button>
+                        <button onclick="devUnlockAllQuantumMilestones()" style="border:1px solid #553355; background:rgba(40,0,40,0.5); color:#cc88cc; padding:4px 12px; border-radius:4px; cursor:pointer; font-size:12px;" data-i18n="set.devFields.unlockAllQms">解锁全部量子里程碑</button>
+                        <button onclick="devUnlockAllAchievements()" style="border:1px solid #553355; background:rgba(40,0,40,0.5); color:#cc88cc; padding:4px 12px; border-radius:4px; cursor:pointer; font-size:12px;" data-i18n="set.devFields.unlockAllAch">解锁全部成就</button>
+                        <button onclick="devFillCurrent()" style="border:1px solid #553355; background:rgba(40,0,40,0.5); color:#cc88cc; padding:4px 12px; border-radius:4px; cursor:pointer; font-size:12px;" data-i18n="set.devFields.fillCurrent">填充当前值</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div><!-- /.app-content -->
+
+    <!-- 悬浮底部状态栏 -->
+    <div class="float-bar" id="float_bar">
+        <div class="fb-item">
+            <span class="fb-label" data-i18n="fb.distance">距离</span>
+            <span class="fb-value" id="fb_s">—</span>
+        </div>
+        <div class="fb-item">
+            <span class="fb-label" data-i18n="fb.rate">增速</span>
+            <span class="fb-rate" id="fb_rate">—</span>
+        </div>
+        <div class="fb-item">
+            <span class="fb-label" data-i18n="fb.speed">速度</span>
+            <span class="fb-value" id="fb_v">—</span>
+        </div>
+        <div class="fb-item">
+            <span class="fb-label" data-i18n="fb.milestone">里程碑</span>
+            <span class="fb-value" id="fb_landmark">—</span>
+        </div>
+    </div>
+
+    <!-- 离线计算弹窗 -->
+    <div class="offline-overlay" id="offline_overlay">
+        <div class="offline-box">
+            <h2 data-i18n="offline.title">⏳ 离线计算中</h2>
+            <div class="offline-sub" data-i18n="offline.desc">正在模拟离线期间的进度...</div>
+            <div class="offline-progress-wrap">
+                <div class="offline-progress-bar" id="offline_progress_bar"></div>
+            </div>
+            <div class="offline-progress-text" id="offline_progress_text">0.000e0 / 0.000e0 tick</div>
+            <div class="offline-speed" id="offline_speed">精度: 3.300e1ms/tick</div>
+            <div class="offline-btns">
+                <button onclick="offlineSimSpeedUp()" data-i18n="offline.accel">⚡ 加速 (精度/2, tick数/2)</button>
+                <button class="skip-btn" onclick="offlineSimSkip()" data-i18n="offline.skip">⏭ 跳过 (100tick/步)</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="math.js?v=21"></script>
+    <script src="track.js?v=21"></script>
+    <script src="i18n.js?v=21"></script>
+    <script src="game.js?v=21"></script>
+</body>
+</html>
